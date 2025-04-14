@@ -1,11 +1,9 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn} from "typeorm"
 import { Question } from "./question.entity"
+import { BaseEntity } from "./base.entity";
 
 @Entity()
-export class Answer{
-    @PrimaryGeneratedColumn()
-    id: number
-    
+export class Answer extends BaseEntity{ 
     @Column()
     content: string
 

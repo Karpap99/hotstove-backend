@@ -1,15 +1,8 @@
-
-
-
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column} from "typeorm"
+import { BaseEntity } from "./base.entity"
 
 @Entity()
-export class Survey{
-    @PrimaryGeneratedColumn()
-    id: number
-    
+export class Survey extends BaseEntity{
     @Column()
     content: string
-
-    
 }

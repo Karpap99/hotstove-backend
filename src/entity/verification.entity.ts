@@ -1,11 +1,9 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from "typeorm"
 import { User } from "./user.entity"
+import { BaseEntity } from "./base.entity"
 
 @Entity()
-export class Verifivation{
-    @PrimaryGeneratedColumn()
-    public id: number
-    
+export class Verifivation extends BaseEntity{
     @OneToOne(()=>User, user => user.id)
     public user_id: User
 
