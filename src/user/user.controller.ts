@@ -1,5 +1,6 @@
-import { Controller, Delete, Get, Param, Post, Put} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put} from '@nestjs/common';
 import { UserService } from './user.service';
+import { UserDTO } from './dto/user.dto';
 
 @Controller('user')
 export class UserController {
@@ -21,8 +22,8 @@ export class UserController {
     }
 
     @Post()
-    public async PostOne(){
-        return await this.serv.getAll();
+    public async PostOne(@Body() user: UserDTO){
+        return await this.serv.CreateUser(user);
     }
 
     @Put("/:userid")

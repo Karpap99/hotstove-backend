@@ -12,6 +12,8 @@ import { QuestionController } from './question/question.controller';
 import { QuestionModule } from './question/question.module';
 import { AnswerService } from './answer/answer.service';
 import { AnswerModule } from './answer/answer.module';
+import { TokenService } from './token/token.service';
+import { TokenModule } from './token/token.module';
 
 @Module({
   imports: [
@@ -20,10 +22,11 @@ import { AnswerModule } from './answer/answer.module';
     UserModule,
     SurveyModule,
     QuestionModule,
-    AnswerModule
+    AnswerModule,
+    TokenModule
 
   ],
   controllers: [],
-  providers: [],
+  providers: [TokenService],
 })
 export class AppModule {}
