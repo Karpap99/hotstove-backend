@@ -14,5 +14,19 @@ export class UserService {
         return await this.repo.find();
     }
 
+    public async getUserById(uuid: string){
+        return await this.repo.find({where: {
+            "id" : uuid
+        }})
+    }
+
+    public async CreateUser(name: string, surname: string, age: number, region: string){
+        return await this.repo.save(
+            {
+                
+            }
+        )
+    }
+
 
 }
