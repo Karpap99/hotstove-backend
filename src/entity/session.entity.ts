@@ -9,6 +9,9 @@ export class Session extends BaseEntity{
     public user: User
 
     @Column()
+    public status: string
+
+    @Column()
     public startTime: Date
 
     @Column()
