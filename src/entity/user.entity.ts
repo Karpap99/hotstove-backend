@@ -10,10 +10,13 @@ export class User extends BaseEntity {
     password: string
 
     @Column()
-    firstName: string
+    nickname: string
 
     @Column()
-    lastName: string
+    profile_picture: string
+
+    @Column()
+    description: string
 
     @Column()
     age: number
