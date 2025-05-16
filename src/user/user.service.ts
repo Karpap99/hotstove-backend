@@ -24,8 +24,12 @@ export class UserService {
     public async CreateUser(user: UserDTO){
         const payload = new User();
         payload.nickname = user.nickname
-        payload.age = user.age
-        payload.region = user.region
+        payload.email = user.email
+        payload.password = user.password
+        payload.age = 0
+        payload.region = ""
+        payload.profile_picture = ""
+        payload.description = ""
         return await this.repo.save(
             payload
         )
