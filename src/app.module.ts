@@ -7,7 +7,10 @@ import { AuthModule } from './auth/auth.module';
 import { UserController } from './user/user.controller';
 import { UserService } from './user/user.service';
 import { UserModule } from './user/user.module';
+import { UploaderModule } from './uploader/uploader.module';
 import "reflect-metadata"
+import { MulterModule } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
 
 
 
@@ -17,6 +20,10 @@ import "reflect-metadata"
     TypeOrmModule.forRoot(configService.getTypeOrmConfig()),
     AuthModule,
     UserModule,
+    UploaderModule,
+    MulterModule.register({
+      storage: memoryStorage()
+    })
   ],
   controllers: [],
   providers: [],

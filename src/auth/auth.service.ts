@@ -20,6 +20,7 @@ export class AuthService {
     public async signUp(user: SignUpDto){ 
         const old_user = await this.users.findOne({where: {"email" : user.email}})
         if (old_user){
+            console.log(old_user)
             return BadRequestException
         }
         if(user.password == user.password2){
@@ -28,7 +29,7 @@ export class AuthService {
             new_user.password = await bcrypt.hash(new_user.password, salt);
             const result = await this.userService.CreateUser(new_user)
             const token = await this.getToken(user.email, user.password)
-            return {result, token}
+            return {"result" : result, "token": token}
         }
         return BadRequestException
     }
@@ -46,8 +47,10 @@ export class AuthService {
     public async login(user: LoginDto){
         const u = await this.users.findOne({where:{"email":user.email}})
         if(u){
-            if(await bcrypt.compare(user.password, u.password))
-                return await this.getToken(user.email,user.password)
+            if(await bcrypt.compare(user.password, u.password)){
+                const token = await this.getToken(user.email,user.password)
+                return {"token": token}
+            }
         }
         return BadRequestException
     }
