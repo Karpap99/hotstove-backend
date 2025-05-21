@@ -18,7 +18,6 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UploaderService } from './uploader.service';
 import { AuthGuard } from '@nestjs/passport';
-import { LocalAuthGuard } from 'src/auth/local-auth.guard';
 import { SharpPipe } from 'src/pipes/sharp.pipe';
  
  

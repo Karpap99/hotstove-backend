@@ -19,9 +19,7 @@ export class User extends BaseEntity {
     description: string
 
     @Column()
-    age: number
+    age: Date
 
-    @Column()
-    region: string
 
 }

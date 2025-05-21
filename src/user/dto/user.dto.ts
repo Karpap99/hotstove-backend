@@ -2,7 +2,6 @@
 import { ApiExpectationFailedResponse, ApiProperty } from '@nestjs/swagger';
 import { isEmail, IsNumber, IsOptional, isString, IsString, IsStrongPassword, IsUUID, } from 'class-validator';
 import { User } from 'src/entity/user.entity';
-import { Logger } from '@nestjs/common';
 
 
 export class UserDTO implements Readonly<UserDTO> {
@@ -22,13 +21,9 @@ export class UserDTO implements Readonly<UserDTO> {
   @IsString()
   nickname: string;
 
-  @ApiProperty({ required:false , default: 0 })
+  @ApiProperty({ required:true , default: new Date() })
   @IsNumber()
-  age: number;
-
-  @ApiProperty({required: false , default: ""})
-  @IsString()
-  region: string;
+  age: Date;
 
 
   @ApiProperty({required: false, default: ""})
@@ -51,7 +46,6 @@ export class UserDTO implements Readonly<UserDTO> {
       id: entity.id,
         nickname: entity.nickname,
         age: entity.age,
-        region: entity.region
     });
   }
 

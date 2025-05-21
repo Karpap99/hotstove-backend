@@ -11,6 +11,8 @@ import { UploaderModule } from './uploader/uploader.module';
 import "reflect-metadata"
 import { MulterModule } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
+import { ConfigModule } from '@nestjs/config';
+import { PostModule } from './post/post.module';
 
 
 
@@ -21,6 +23,7 @@ import { memoryStorage } from 'multer';
     AuthModule,
     UserModule,
     UploaderModule,
+    PostModule,
     MulterModule.register({
       storage: memoryStorage()
     })

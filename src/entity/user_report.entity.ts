@@ -1,23 +1,18 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn} from "typeorm"
 import { BaseEntity } from "./base.entity"
+import { Post } from "./post.entity"
 import { User } from "./user.entity"
 
 @Entity()
-export class Post extends BaseEntity{
-    @Column()
-    title: string
-
-    @Column({type:"xml"})
-    markign: string[]
+export class UserReport extends BaseEntity{
+    @JoinColumn()
+    @OneToOne(()=>User, user=>user.id)
+    reportedBy: User
 
     @JoinColumn()
     @OneToOne(()=>User, user=>user.id)
-    creator: User
+    reported: User
 
     @Column()
-    views: number
-
-    @Column()
-    likes: number
-
+    reason: string
 }

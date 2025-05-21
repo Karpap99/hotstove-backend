@@ -8,23 +8,24 @@ import { LocalStrategy } from './local.strategy';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UserService } from 'src/user/user.service';
+import { JwtStrategy } from './jwt.strategy';
 
 @Module({
   imports:[PassportModule,
-    TypeOrmModule.forFeature([User]),
     JwtModule.registerAsync({
       imports:[ConfigModule],
       useFactory: async (config: ConfigService) => ({
-        secret: process.env.SECRET_ACCESS,
-        secretOrPrivateKey: process.env.SECRET_ACCESS,
+        secret: config.get<string>('SECRET_ACCESS'),
+        secretOrPrivateKey: config.get<string>('SECRET_ACCESS'),
         signOptions: {
           expiresIn: 50
         }
       }),
       inject: [ConfigService]
-    })
+    }),
+    TypeOrmModule.forFeature([User])
   ],
   controllers: [AuthController],
-  providers: [AuthService,UserService, LocalStrategy, JwtService]
+  providers: [ConfigService, AuthService,UserService, LocalStrategy, JwtService, JwtStrategy ]
 })
 export class AuthModule {}

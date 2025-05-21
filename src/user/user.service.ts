@@ -1,8 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entity/user.entity';
 import { Repository } from 'typeorm';
 import { UserDTO } from './dto/user.dto';
+import { LoginDto } from 'src/auth/dto/login.dto';
+import { TokenDto } from 'src/auth/dto/token.dto';
 
 @Injectable()
 export class UserService {
@@ -15,19 +17,19 @@ export class UserService {
         return await this.repo.find();
     }
 
-    public async getUserById(uuid: string){
-        return await this.repo.find({where: {
-            "id" : uuid
+    public async getUserById(user: string){
+        return await this.repo.findOne({where: {
+            "id" : user
         }})
     }
+
 
     public async CreateUser(user: UserDTO){
         const payload = new User();
         payload.nickname = user.nickname
         payload.email = user.email
         payload.password = user.password
-        payload.age = 0
-        payload.region = ""
+        payload.age = new Date()
         payload.profile_picture = ""
         payload.description = ""
         return await this.repo.save(
@@ -37,5 +39,15 @@ export class UserService {
 
     public async DeleteUser(id: string){
         return await this.repo.delete(id);
+    }
+
+    public async UpdateUser(uuid: string, user: UserDTO){
+        const u = await this.repo.findOne({where:{id: uuid}})
+        if(!u) return {'result': "user doesn't exist"}
+
+        const result = await this.repo.save({
+           ...u, ...user
+        })
+        return result
     }
 }
