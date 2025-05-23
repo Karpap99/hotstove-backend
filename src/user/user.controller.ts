@@ -1,8 +1,9 @@
-import { Body, Controller, Delete, Get, Logger, Param, Post, Put, Req, UseGuards} from '@nestjs/common';
+import { Body, Controller, Delete, FileTypeValidator, Get, Logger, MaxFileSizeValidator, Param, ParseFilePipe, Post, Put, Req, UploadedFile, UseGuards, UseInterceptors} from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserDTO } from './dto/user.dto';
 import { AuthGuard } from '@nestjs/passport';
-
+import { FileInterceptor } from '@nestjs/platform-express';
+import { UpdateDTO } from './dto/update.dto';
 @Controller('user')
 export class UserController {
     constructor(private serv: UserService){}
@@ -33,7 +34,22 @@ export class UserController {
 
     @UseGuards(AuthGuard("jwt"))
     @Put("/")
-    public async UpdateOneById(@Req() req: Request, @Body() user: UserDTO){
-        return await this.serv.UpdateUser(req['user'].uuid, user);
+    @UseInterceptors(FileInterceptor('file'))
+    public async UpdateOneById(@UploadedFile(
+          new ParseFilePipe({
+            validators: [
+              new FileTypeValidator({ fileType: '.(png|jpeg|jpg)' }),
+              new MaxFileSizeValidator({
+                maxSize: 10000000, // 10MB
+                message: 'File is too large. Max file size is 10MB',
+              }),
+            ],
+            fileIsRequired: false,
+          }),
+        )
+        file: Express.Multer.File,
+        @Req() req: Request, 
+        @Body() update: UpdateDTO){
+        return await this.serv.UpdateUser(req['user'].uuid, update, file);
     }
 }

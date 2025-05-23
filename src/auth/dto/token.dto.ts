@@ -6,24 +6,22 @@ import { SignUpDto } from './sign-up.dto';
 export class TokenDto {
 
     @ApiProperty()
-    @IsString()
     @IsUUID()
     public uuid: string;
 
     @ApiProperty()
-    @IsString()
     @IsEmail()
     public email: string;
 
     @ApiProperty()
     @IsString()
-    public login: string;
+    public nickname: string;
 
-    public static from(uuid: string, email: string, login: string){
+    public static from(uuid: string, email: string, nickname: string){
         const it = new TokenDto;
         it.uuid = uuid;
         it.email = email;
-        it.login = login;
+        it.nickname = nickname;
         return it   
     }
 }

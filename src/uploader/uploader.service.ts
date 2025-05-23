@@ -14,10 +14,6 @@ export class UploaderService {
     private client: S3Client;
     private bucketName;
 
-
-    /**
-     *
-     */
     constructor(
         private readonly configService: ConfigService
     ) {
@@ -60,8 +56,6 @@ export class UploaderService {
       });
  
       const uploadResult = await this.client.send(command);
-      
-      console.log(uploadResult)
   
       return {
         url: isPublic
@@ -98,10 +92,10 @@ export class UploaderService {
       });
  
       const uploadResult = await this.client.send(command);
-  
+      console.log(uploadResult)
       return {
         url: isPublic
-          ? (await this.getFileUrl(key)).url
+          ? (await this.getPfpUrl(key)).url
           : (await this.getPresignedSignedUrl(key)).url,
         key,
         isPublic,
@@ -112,6 +106,10 @@ export class UploaderService {
   }
   
  
+  async getPfpUrl(key: string) {
+    return { url: `https://${this.bucketName}.s3.amazonaws.com/profile_pictures/${key}` };
+  }
+
   async getFileUrl(key: string) {
     return { url: `https://${this.bucketName}.s3.amazonaws.com/${key}` };
   }

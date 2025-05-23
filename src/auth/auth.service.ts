@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, Logger, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, UnauthorizedException, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { UserDTO } from 'src/user/dto/user.dto';
 import { User } from 'src/entity/user.entity';
 import { Repository } from 'typeorm';
@@ -10,7 +10,9 @@ import { LoginDto } from './dto/login.dto';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { TokenDto } from './dto/token.dto';
+import { access } from 'fs';
 
+@UsePipes(new ValidationPipe({transform: true}))
 @Injectable()
 export class AuthService {
     constructor(
@@ -21,35 +23,54 @@ export class AuthService {
     ){}
 
     public async signUp(user: SignUpDto){ 
+        const error = {
+            "message": [''],
+            "error": "Bad Request",
+            "statusCode": 400
+        }
         const old_user = await this.users.findOne({where: {"email" : user.email}})
         if (old_user){
-            console.log(old_user)
-            return {'error' : 'user exist'}
+            error.message.push('this email taken')
+            throw new BadRequestException(error)
         }
         if(user.password == user.password2){
             const new_user = UserDTO.from(user)
             const salt = await bcrypt.genSalt();
             new_user.password = await bcrypt.hash(new_user.password, salt);
             const result = await this.userService.CreateUser(new_user)
-            const token = await this.getToken(TokenDto.from(result["uuid"],result['email'],result['nickname']))
-            return {"result" : result, "token": token}
+            const {access, refresh} = await this.getToken(TokenDto.from(result["uuid"],result['email'],result['nickname']))
+            return {"result" : result, "access": access, "refresh": refresh}
         }
         return BadRequestException
     }
 
 
-    async validateUser(email: string, password: string){
-        const user = await this.users.findOne({where:{"email": email}})
-        if(!user) throw new BadRequestException('userDoensExist')
-        const pass_compare = await bcrypt.compare( password, user.password,)
-        if (!pass_compare) throw new BadRequestException('Password doesnt exist')
+    async validateUser(loginDTO: LoginDto): Promise<User>{
+        const error = {
+            "message": [''],
+            "error": "Bad Request",
+            "statusCode": 400
+        }
+    
+        const user = await this.users.findOne({where:{"email": loginDTO.email}})
+        if(!user){
+            error.message.push("user doesn't exist")
+            throw new BadRequestException(error)
+        } 
+        const pass_compare = await bcrypt.compare( loginDTO.password, user.password,)
+        if (!pass_compare){
+            error.message.push("user doesn't exist")
+            throw new BadRequestException(error)
+        } 
         return user
     }
 
     
-    async login(user: TokenDto){
-        const {access, refresh} = await this.getToken(user)
-        return {"access": access, "refresh": refresh}
+    async login(usr: LoginDto){
+        const user = await this.validateUser(usr)
+        const tokenDTO = TokenDto.from(user.id, user.email, user.nickname)
+        const {access, refresh} = await this.getToken(tokenDTO)
+        return {"result": user, "access": access, "refresh": refresh}
     }
 
     async verifyToken(token: string, type: 'access' | 'refresh'){

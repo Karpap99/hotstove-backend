@@ -2,14 +2,9 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsEmail, IsPhoneNumber, IsString, IsStrongPassword, Length } from 'class-validator';
 
 export class LoginDto {
-    @ApiProperty()
-    @IsString()
     @IsEmail()
     public email: string;
 
-
-    @ApiProperty()
-    @IsString()
     @IsStrongPassword({
         minLength: 7,
         minNumbers: 1,
@@ -18,5 +13,13 @@ export class LoginDto {
         minLowercase: 1,
     })
     public password: string;
+
+    public static from(email: string, password: string){
+        const it = new LoginDto()
+        it.email = email;
+        it.password = password
+        return it
+
+    }
 
 }

@@ -6,6 +6,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Logger,
   MaxFileSizeValidator,
   Param,
   ParseFilePipe,
@@ -43,7 +44,6 @@ export class UploaderController {
     file: Express.Multer.File,
     @Body('isPublic') isPublic: string,
   ) {
-    console.log(file)
     const isPublicBool = isPublic === 'true' ? true : false;
     return this.uploaderService.uploadSingleFile({ file, isPublic: isPublicBool });
   }
@@ -67,6 +67,7 @@ export class UploaderController {
     file: Express.Multer.File,
     @Body('isPublic') isPublic: string,
   ) {
+    
     const isPublicBool = isPublic === 'true' ? true : false;
     return this.uploaderService.uploadProfilePhoto({ file, isPublic: isPublicBool });
   }

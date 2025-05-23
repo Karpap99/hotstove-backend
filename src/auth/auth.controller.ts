@@ -6,6 +6,8 @@ import { SignUpDto } from './dto/sign-up.dto';
 import { LoginDto } from './dto/login.dto';
 import { time } from 'console';
 import { TokenDto } from './dto/token.dto';
+import { userInfo } from 'os';
+import { UserDTO } from 'src/user/dto/user.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -16,10 +18,9 @@ export class AuthController {
         return await this.serv.signUp(user)
     }
 
-    @UseGuards(AuthGuard('local'))
     @Post("login")
     public async login(@Req() req: Request, @Body() user: LoginDto){
-        return await this.serv.login(TokenDto.from(req['user'].uuid,req['user'].email,req['user'].nickname))
+        return await this.serv.login(user)
     }
 
     @UseGuards(AuthGuard('jwt'))

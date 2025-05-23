@@ -7,10 +7,12 @@ import { JwtStrategy } from 'src/auth/jwt.strategy';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from 'src/auth/auth.service';
 import { JwtService } from '@nestjs/jwt';
+import { UploaderService } from 'src/uploader/uploader.service';
+import { UploaderModule } from 'src/uploader/uploader.module';
 
 @Module({
     imports:[TypeOrmModule.forFeature([User])],
-    providers:[UserService, ConfigService, AuthService, JwtService, JwtStrategy],
+    providers:[UploaderService, UserService, ConfigService, AuthService, JwtService, JwtStrategy],
     controllers: [UserController],
     exports: []
 })

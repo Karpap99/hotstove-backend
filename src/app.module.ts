@@ -13,6 +13,7 @@ import { MulterModule } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { ConfigModule } from '@nestjs/config';
 import { PostModule } from './post/post.module';
+import { MailModule } from './mail/mail.module';
 
 
 
@@ -26,7 +27,8 @@ import { PostModule } from './post/post.module';
     PostModule,
     MulterModule.register({
       storage: memoryStorage()
-    })
+    }),
+    MailModule
   ],
   controllers: [],
   providers: [],

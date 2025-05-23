@@ -3,16 +3,14 @@ import { IsBoolean, IsEmail, IsPhoneNumber, IsString, IsStrongPassword, Length }
 
 export class SignUpDto {
     @ApiProperty()
-    @IsString()
     @IsEmail()
     public email: string;
 
     @ApiProperty()
     @IsString()
-    public login: string;
+    public nickname: string;
 
     @ApiProperty()
-    @IsString()
     @IsStrongPassword({
         minLength: 7,
         minNumbers: 1,
