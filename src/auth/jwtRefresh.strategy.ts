@@ -6,12 +6,12 @@ import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
+export class JwtRefreshStrategy extends PassportStrategy(Strategy) {
   constructor(@Inject(ConfigService) protected readonly configService: ConfigService) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme('Cookie'),
       ignoreExpiration: false,
-      secretOrKey: configService.getOrThrow("SECRET_ACCESS")
+      secretOrKey: configService.getOrThrow("SECRET_REFRESH")
     });
   }
 

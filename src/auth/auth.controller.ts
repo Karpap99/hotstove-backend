@@ -35,6 +35,11 @@ export class AuthController {
     public async logout(){
         return await ""
     }
+
+    @Get("reauth")
+    public async reauth(@Req() req: Request){
+        return await this.serv.reAuth(req.headers['cookie'])
+    }
     
 
 }

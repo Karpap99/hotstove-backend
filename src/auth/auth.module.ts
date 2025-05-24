@@ -10,6 +10,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UserService } from 'src/user/user.service';
 import { JwtStrategy } from './jwt.strategy';
 import { UploaderService } from 'src/uploader/uploader.service';
+import { JwtRefreshStrategy } from './jwtRefresh.strategy';
 
 @Module({
   imports:[PassportModule,
@@ -27,6 +28,6 @@ import { UploaderService } from 'src/uploader/uploader.service';
     TypeOrmModule.forFeature([User])
   ],
   controllers: [AuthController],
-  providers: [ConfigService, UploaderService, AuthService, UserService, LocalStrategy, JwtService, JwtStrategy ]
+  providers: [ConfigService, UploaderService, AuthService, UserService , JwtService, JwtStrategy, LocalStrategy, JwtRefreshStrategy]
 })
 export class AuthModule {}

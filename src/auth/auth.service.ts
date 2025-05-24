@@ -11,6 +11,7 @@ import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { TokenDto } from './dto/token.dto';
 import { access } from 'fs';
+import { ResponseDTO } from 'src/user/dto/response.dto';
 
 @UsePipes(new ValidationPipe({transform: true}))
 @Injectable()
@@ -39,7 +40,8 @@ export class AuthService {
             new_user.password = await bcrypt.hash(new_user.password, salt);
             const result = await this.userService.CreateUser(new_user)
             const {access, refresh} = await this.getToken(TokenDto.from(result["uuid"],result['email'],result['nickname']))
-            return {"result" : result, "access": access, "refresh": refresh}
+            const response = ResponseDTO.from(result)
+            return {"result" : response, "access": access, "refresh": refresh}
         }
         return BadRequestException
     }
@@ -65,12 +67,34 @@ export class AuthService {
         return user
     }
 
+    async reAuth(refreshTKN: string){
+        const result = await this.verifyToken(refreshTKN, 'refresh')
+        const error = {
+            "message": [''],
+            "error": "Bad Request",
+            "statusCode": 400
+        }
+        const user = await this.users.findOne({where:{'id': result.uuid}})
+        if(!user){
+            error.message.push("user doesn't exist")
+            throw new BadRequestException(error)
+        } 
+        const tokend = new TokenDto()
+        tokend.uuid = user.id
+        tokend.uuid = result.email
+        tokend.uuid = result.nickname
+        const {access, refresh} = await this.getToken(tokend)
+        const response = ResponseDTO.from(user)
+        return {"result": response, "access": access, "refresh": refresh}
+    }
+
     
     async login(usr: LoginDto){
         const user = await this.validateUser(usr)
         const tokenDTO = TokenDto.from(user.id, user.email, user.nickname)
         const {access, refresh} = await this.getToken(tokenDTO)
-        return {"result": user, "access": access, "refresh": refresh}
+        const response = ResponseDTO.from(user)
+        return {"result": response, "access": access, "refresh": refresh}
     }
 
     async verifyToken(token: string, type: 'access' | 'refresh'){
