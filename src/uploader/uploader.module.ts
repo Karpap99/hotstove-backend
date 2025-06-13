@@ -5,7 +5,8 @@ import { ConfigService } from '@nestjs/config';
 
 @Module({
   imports:[],
-  providers: [UploaderService,ConfigService],
-  controllers: [UploaderController]
+  providers: [UploaderService, ConfigService],
+  controllers: [UploaderController],
+  exports: [UploaderService]
 })
 export class UploaderModule {}

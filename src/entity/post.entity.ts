@@ -1,23 +1,38 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn} from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, ManyToOne, OneToMany, Like} from "typeorm"
 import { BaseEntity } from "./base.entity"
 import { User } from "./user.entity"
+import { Tags } from "./tags.entity"
+import { Tag } from "./tag.entity"
+import { Likes } from "./likes.entity"
 
 @Entity()
 export class Post extends BaseEntity{
     @Column()
     title: string
 
-    @Column({type:"xml"})
-    markign: string[]
+    @Column()
+    description: string
 
+
+    @Column({default: ''})
+    title_picture: string
+    
     @JoinColumn()
-    @OneToOne(()=>User, user=>user.id)
+    @ManyToOne(()=>User, user=>user.id)
     creator: User
 
-    @Column()
+    @OneToMany(()=>Tags, tags=>tags.post, {cascade: true, eager: true})
+    tags:Tags[]
+
+    @Column({default: 0})
     views: number
 
-    @Column()
-    likes: number
+    @Column({default: 0})
+    likeCount: number
+
+    @OneToMany(() => Likes, likes => likes.post)
+    likes: Likes[]
+
+    
 
 }

@@ -15,7 +15,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         transport: {
           host: 'smtp.gmail.com',
           port: 587,
-          secure: false, // upgrade later with STARTTLS
+          secure: false,
           auth: {
             user: configService.get('MAIL_USER'),
             pass: configService.get('MAIL_PASSWORD'),
@@ -26,7 +26,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         },
         template: {
           dir: process.cwd() + '/templates/',
-          adapter: new HandlebarsAdapter(), // or new PugAdapter() or new EjsAdapter()
+          adapter: new HandlebarsAdapter(), 
           options: {
             strict: true,
           },

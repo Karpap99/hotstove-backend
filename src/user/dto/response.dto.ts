@@ -5,7 +5,8 @@ import { User } from 'src/entity/user.entity';
 
 
 export class ResponseDTO implements Readonly<ResponseDTO> {
-
+  @ApiProperty({required:false})
+  id: string
   @ApiProperty({ required: false })
   email: string;
 
@@ -24,11 +25,9 @@ export class ResponseDTO implements Readonly<ResponseDTO> {
 
   public static from(dto: User) {
     const it = new ResponseDTO();
-    it.age = dto.age
+    it.id = dto.id
     it.nickname = dto.nickname
     it.email = dto.email
-    it.profile_picture = dto.profile_picture
-    it.description = dto.description
     return it;
   }
 

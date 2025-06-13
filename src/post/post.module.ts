@@ -1,20 +1,17 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Post } from 'src/entity/post.entity';
 import { PostService } from './post.service';
 import { PostController } from './post.controller';
-import { ConfigService } from '@nestjs/config';
-import { AuthService } from 'src/auth/auth.service';
-import { JwtService } from '@nestjs/jwt';
-import { JwtStrategy } from 'src/auth/jwt.strategy';
-import { UserService } from 'src/user/user.service';
-import { User } from 'src/entity/user.entity';
-import { UploaderService } from 'src/uploader/uploader.service';
+import { UserModule } from 'src/user/user.module';
+import { UploaderModule } from 'src/uploader/uploader.module';
+import { LikeModule } from 'src/like/like.module';
+import { Marking } from 'src/entity/marking.entity';
 
 @Module({
-    imports:[TypeOrmModule.forFeature([Post, User])],
-    providers:[PostService, UploaderService,ConfigService, AuthService, JwtService, JwtStrategy, UserService],
+    imports:[ forwardRef(()=>UserModule), forwardRef(()=>LikeModule), UploaderModule, TypeOrmModule.forFeature([Post, Marking])],
+    providers:[PostService],
     controllers: [PostController],
-    exports: []
+    exports: [PostService]
 })
 export class PostModule {}

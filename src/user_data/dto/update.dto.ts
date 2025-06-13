@@ -13,15 +13,6 @@ export class UpdateDTO implements Readonly<UpdateDTO> {
     type: string
   };
 
-  @ApiProperty({ required: false })
-  email: string;
-
-  @ApiProperty({ required: false })
-  password: string;
-
-  @ApiProperty({ required: false })
-  nickname: string;
-
   @ApiProperty({ required:false})
   age: string;
 
@@ -43,7 +34,6 @@ export class UpdateDTO implements Readonly<UpdateDTO> {
   public toEntity() {
 
     const it = new User();
-    it.nickname = this.nickname;
     it.lastChangedDateTime = new Date();
     it.createDateTime = new Date();
     return it;

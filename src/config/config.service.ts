@@ -4,14 +4,12 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 require('dotenv').config();
 
 class ConfigService {
-
   constructor(private env: { [k: string]: string | undefined }) { }
 
   private getValue(key: string, throwOnMissing = true): string | undefined {
     const value = this.env[key];
-    if (!value && throwOnMissing &&  value === "undefined") {
+    if (!value && throwOnMissing &&  value === "undefined")
       throw new Error(`config error - missing env.${key}`);
-    }
     return value;
   }
 
@@ -20,45 +18,29 @@ class ConfigService {
     return this;
   }
 
-  public getPort() {
-    return this.getValue('PORT', true);
-  }
+  public getPort = () => this.getValue('PORT', true)
 
-  public isProduction() {
-    const mode = this.getValue('MODE', false);
-    return mode != 'DEV';
-  }
+  public isProduction = () => this.getValue('MODE', false) != 'DEV'
 
   public getTypeOrmConfig(): TypeOrmModuleOptions {
     return {
       type: 'postgres',
-
       host: this.getValue('POSTGRES_HOST'),
       port: 5432,
       username: this.getValue('POSTGRES_USER'),
       password: this.getValue('POSTGRES_PASSWORD'),
       database: this.getValue('POSTGRES_DATABASE'),
-
       entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-
       migrationsTableName: 'migration',
-
       migrations: ['src/migration/*.ts'],
         synchronize: true,
-
-      ssl: false,
+      ssl: {
+        rejectUnauthorized: false,
+      },
+      
     };
   }
-
 }
 
-const configService = new ConfigService(process.env)
-  .ensureValues([
-    'POSTGRES_HOST',
-    'POSTGRES_PORT',
-    'POSTGRES_USER',
-    'POSTGRES_PASSWORD',
-    'POSTGRES_DATABASE'
-  ]);
-
-export { configService };
+export const configService = new ConfigService(process.env)
+.ensureValues(['POSTGRES_HOST','POSTGRES_PORT','POSTGRES_USER','POSTGRES_PASSWORD','POSTGRES_DATABASE']);

@@ -1,8 +1,11 @@
 
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsOptional, IsString,IsUUID, } from 'class-validator';
+import { IsJSON, IsNumber, IsOptional, IsString,IsUUID, } from 'class-validator';
 import { Post } from 'src/entity/post.entity';
 import { User } from 'src/entity/user.entity';
+import { Markingdt } from './types';
+import { emit } from 'process';
+import { Likes } from 'src/entity/likes.entity';
 
 
 export class CreateDTO implements Readonly<CreateDTO> {
@@ -11,18 +14,26 @@ export class CreateDTO implements Readonly<CreateDTO> {
   id: string;
 
   @ApiProperty({ required: true })
-  marking: string[]
+  title: string
 
-  @ApiProperty({ required:true})
+  @ApiProperty({required: false})
+  description: string
+
+  @ApiProperty({required: false, default: ""})
+  title_picture: string
+
+  @ApiProperty({required: false})
+  marking: string
+
+  @ApiProperty({ required:false})
   creator: User;
 
-  @ApiProperty({ required:true , default: 0 })
-  @IsString()
+  @ApiProperty({ required:false , default: 0 })
   views: number;
 
-  @ApiProperty({ required:true , default: 0 })
-  @IsNumber()
-  likes: number;
+  @ApiProperty({ required:false})
+  likes: Likes[];
+
 
   
 
@@ -35,14 +46,28 @@ export class CreateDTO implements Readonly<CreateDTO> {
   public static fromEntity(entity: Post) {
     return this.from({
       id: entity.id,
+      title: entity.title,
+      description: entity.description,
+      title_picture: entity.title_picture,
       creator: entity.creator,
-      marking: entity.markign,
       views: entity.views,
       likes: entity.likes
     });
   }
 
-  public toEntity() {
+  public WithoutMarking() {
+    return {
+      id: this.id,
+      title: this.title,
+      description: this.description,
+      title_picture: this.title_picture,
+      creator: this.creator,
+      views: this.views,
+      likes: this.likes
+    };
+  }
+
+  public toEntity(dto: Partial<CreateDTO>) {
     const it = new Post();
     return it;
   }

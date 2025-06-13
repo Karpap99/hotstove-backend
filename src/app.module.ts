@@ -14,6 +14,11 @@ import { memoryStorage } from 'multer';
 import { ConfigModule } from '@nestjs/config';
 import { PostModule } from './post/post.module';
 import { MailModule } from './mail/mail.module';
+import { FollowerService } from './follower/follower.service';
+import { FollowerModule } from './follower/follower.module';
+import { LikeService } from './like/like.service';
+import { LikeModule } from './like/like.module';
+import { UserDataModule } from './user_data/user_data.module';
 
 
 
@@ -24,11 +29,15 @@ import { MailModule } from './mail/mail.module';
     AuthModule,
     UserModule,
     UploaderModule,
+    MailModule,
+    FollowerModule,
     PostModule,
     MulterModule.register({
       storage: memoryStorage()
     }),
-    MailModule
+    LikeModule,
+    UserDataModule
+    
   ],
   controllers: [],
   providers: [],

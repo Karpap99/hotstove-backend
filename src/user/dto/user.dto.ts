@@ -22,19 +22,6 @@ export class UserDTO implements Readonly<UserDTO> {
   @IsString()
   nickname: string;
 
-  @ApiProperty({ required:true , default: new Date() })
-  @IsNumber()
-  age: Date;
-
-
-  @ApiProperty({required: false, default: ""})
-  @IsString()
-  profile_picture: string;
-
-  @ApiProperty({required: false, default: ""})
-  @IsString()
-  description: string
-  
 
   public static from(dto: Partial<UserDTO>) {
     const it = new UserDTO();
@@ -45,8 +32,7 @@ export class UserDTO implements Readonly<UserDTO> {
   public static fromEntity(entity: User) {
     return this.from({
       id: entity.id,
-        nickname: entity.nickname,
-        age: entity.age,
+      nickname: entity.nickname,
     });
   }
 

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -10,10 +10,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UserService } from 'src/user/user.service';
 import { JwtStrategy } from './jwt.strategy';
 import { UploaderService } from 'src/uploader/uploader.service';
-import { JwtRefreshStrategy } from './jwtRefresh.strategy';
+import { UserModule } from 'src/user/user.module';
 
 @Module({
   imports:[PassportModule,
+    forwardRef(() => UserModule),
     JwtModule.registerAsync({
       imports:[ConfigModule],
       useFactory: async (config: ConfigService) => ({
@@ -25,9 +26,11 @@ import { JwtRefreshStrategy } from './jwtRefresh.strategy';
       }),
       inject: [ConfigService]
     }),
-    TypeOrmModule.forFeature([User])
+    TypeOrmModule.forFeature([User]),
+    
   ],
   controllers: [AuthController],
-  providers: [ConfigService, UploaderService, AuthService, UserService , JwtService, JwtStrategy, LocalStrategy, JwtRefreshStrategy]
+  providers: [ConfigService, UploaderService, AuthService, JwtService, JwtStrategy, LocalStrategy],
+  exports: [AuthService]
 })
 export class AuthModule {}

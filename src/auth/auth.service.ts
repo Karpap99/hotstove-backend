@@ -10,7 +10,6 @@ import { LoginDto } from './dto/login.dto';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { TokenDto } from './dto/token.dto';
-import { access } from 'fs';
 import { ResponseDTO } from 'src/user/dto/response.dto';
 
 @UsePipes(new ValidationPipe({transform: true}))
@@ -29,21 +28,22 @@ export class AuthService {
             "error": "Bad Request",
             "statusCode": 400
         }
+        Logger.log("here")
         const old_user = await this.users.findOne({where: {"email" : user.email}})
         if (old_user){
             error.message.push('this email taken')
             throw new BadRequestException(error)
         }
-        if(user.password == user.password2){
-            const new_user = UserDTO.from(user)
-            const salt = await bcrypt.genSalt();
-            new_user.password = await bcrypt.hash(new_user.password, salt);
-            const result = await this.userService.CreateUser(new_user)
-            const {access, refresh} = await this.getToken(TokenDto.from(result["uuid"],result['email'],result['nickname']))
-            const response = ResponseDTO.from(result)
-            return {"result" : response, "access": access, "refresh": refresh}
-        }
-        return BadRequestException
+        if(!(user.password == user.password2)) return BadRequestException
+        const new_user = UserDTO.from(user)
+
+        const salt = await bcrypt.genSalt(); 
+        new_user.password = await bcrypt.hash(new_user.password, salt);
+
+        const result = await this.userService.CreateUser(new_user)
+        const {access, refresh} = await this.getToken(TokenDto.from(result.id,result.email,result.nickname))
+        const response = ResponseDTO.from(result)
+        return {"result" : response, "access": access, "refresh": refresh}
     }
 
 
@@ -79,11 +79,8 @@ export class AuthService {
             error.message.push("user doesn't exist")
             throw new BadRequestException(error)
         } 
-        const tokend = new TokenDto()
-        tokend.uuid = user.id
-        tokend.uuid = result.email
-        tokend.uuid = result.nickname
-        const {access, refresh} = await this.getToken(tokend)
+        const tokenDTO = TokenDto.from(user.id, user.email, user.nickname)
+        const {access, refresh} = await this.getToken(tokenDTO)
         const response = ResponseDTO.from(user)
         return {"result": response, "access": access, "refresh": refresh}
     }
@@ -99,18 +96,19 @@ export class AuthService {
 
     async verifyToken(token: string, type: 'access' | 'refresh'){
         try {
-            return this.jwtService.verify(token, {
+            return await this.jwtService.verify(token, {
                 secret:
                     type === 'access'
                         ? this.configService.get<string>('SECRET_ACCESS')
                         : this.configService.get<string>('SECRET_REFRESH'),
                 ignoreExpiration: false,
                 algorithms: ['HS256'],
-            });
+            });  
         } catch (e) {
             throw new UnauthorizedException();
         }
     }
+
     async getToken(user: TokenDto){
         const access = this.jwtService.sign({...user}, 
             {
@@ -125,5 +123,4 @@ export class AuthService {
             })
         return {access, refresh}
     }
-
 }

@@ -1,5 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm"
 import { BaseEntity } from "./base.entity"
+import { Post } from "./post.entity"
+import { Likes } from "./likes.entity"
 
 @Entity()
 export class User extends BaseEntity {
@@ -11,15 +13,10 @@ export class User extends BaseEntity {
 
     @Column()
     nickname: string
+    
+    @OneToMany(() => Post, (post) => post.creator)
+    posts: Post[];
 
-    @Column()
-    profile_picture: string
-
-    @Column()
-    description: string
-
-    @Column()
-    age: Date
-
-
+    @OneToMany(() => Likes, like => like.likeBy)
+    likes: Likes[]
 }

@@ -45,7 +45,7 @@ export class UploaderController {
     @Body('isPublic') isPublic: string,
   ) {
     const isPublicBool = isPublic === 'true' ? true : false;
-    return this.uploaderService.uploadSingleFile({ file, isPublic: isPublicBool });
+    return ""
   }
 
 

@@ -14,16 +14,13 @@ export class UploaderService {
     private client: S3Client;
     private bucketName;
 
-    constructor(
-        private readonly configService: ConfigService
-    ) {
+    constructor(private readonly configService: ConfigService) 
+    {
         this.bucketName = this.configService.get('S3_BUCKET_NAME')
         const s3_region = this.configService.get('S3_REGION')
         const accessKey = this.configService.get('S3_ACCESS_KEY')
         const secretAccessKey = this.configService.get('S3_SECRET_ACCESS_KEY')
-        if(!s3_region || !accessKey || !secretAccessKey){
-            throw new Error('not found')
-        }
+        if(!s3_region || !accessKey || !secretAccessKey) throw new Error('not found')
         this.client = new S3Client({
             region: s3_region,
             credentials: {
@@ -34,22 +31,15 @@ export class UploaderService {
         });
     }
 
-    async uploadSingleFile({
-        file,
-        isPublic = true,
-    }: {
-        file: Express.Multer.File;
-        isPublic: boolean;
-    }) {
+    async uploadPostPhoto(file: Express.Multer.File) {
         try {
             const key = `${uuidv4()}`;
             const command = new PutObjectCommand({
             Bucket: this.bucketName,
-            Key:  key,
+            Key: "post_pictures/" + key,
             Body: file.buffer,
             ContentType: file.mimetype,
-            ACL: isPublic ? 'public-read' : 'private',
- 
+            ACL:  'public-read',
             Metadata: {
                 originalName: file.originalname,
             },
@@ -58,11 +48,8 @@ export class UploaderService {
       const uploadResult = await this.client.send(command);
   
       return {
-        url: isPublic
-          ? (await this.getFileUrl(key)).url
-          : (await this.getPresignedSignedUrl(key)).url,
-        key,
-        isPublic,
+        url:  `https://${this.bucketName}.s3.amazonaws.com/post_pictures/${key}` ,
+        key
       };
     } catch (error) {
       throw new InternalServerErrorException(error);
@@ -77,7 +64,8 @@ export class UploaderService {
         file: Express.Multer.File;
         isPublic: boolean;
     }) {
-        try {
+
+      try {
             const key = `${uuidv4()}`;
             const command = new PutObjectCommand({
             Bucket: this.bucketName,
@@ -85,14 +73,13 @@ export class UploaderService {
             Body: file.buffer,
             ContentType: file.mimetype,
             ACL: isPublic ? 'public-read' : 'private',
- 
             Metadata: {
                 originalName: file.originalname,
             },
       });
  
       const uploadResult = await this.client.send(command);
-      console.log(uploadResult)
+
       return {
         url: isPublic
           ? (await this.getPfpUrl(key)).url

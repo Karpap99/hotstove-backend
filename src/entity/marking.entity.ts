@@ -1,16 +1,15 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, ManyToOne} from "typeorm"
 import { BaseEntity } from "./base.entity"
-import { Tag } from "./tag.entity"
+import { User } from "./user.entity"
 import { Post } from "./post.entity"
+import { Markingdt } from "src/post/dto/types"
 
 @Entity()
-export class Tags extends BaseEntity{
+export class Marking extends BaseEntity{
     @JoinColumn()
-    @ManyToOne(()=>Tag, tag => tag.tags)
-    tag: Tag
-
-    @JoinColumn()
-    @ManyToOne(()=>Post, post => post.tags)
+    @OneToOne(()=>Post, post => post.id)
     post: Post
 
+    @Column({type:"json"})
+    marking: Markingdt
 }
