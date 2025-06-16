@@ -32,24 +32,21 @@ export class UploaderService {
     }
 
     async uploadPostPhoto(file: Express.Multer.File) {
-        try {
-            const key = `${uuidv4()}`;
-            const command = new PutObjectCommand({
-            Bucket: this.bucketName,
-            Key: "post_pictures/" + key,
-            Body: file.buffer,
-            ContentType: file.mimetype,
-            ACL:  'public-read',
-            Metadata: {
-                originalName: file.originalname,
-            },
+      const key = `post_pictures/${uuidv4()}`;
+      try {
+        const command = new PutObjectCommand({
+        Bucket: this.bucketName,
+        Key: key,
+        Body: file.buffer,
+        ContentType: file.mimetype,
+        ACL:  'public-read',
+        Metadata: {
+          originalName: file.originalname,
+        },
       });
- 
-      const uploadResult = await this.client.send(command);
-  
+      await this.client.send(command);
       return {
-        url:  `https://${this.bucketName}.s3.amazonaws.com/post_pictures/${key}` ,
-        key
+        url:  `https://${this.bucketName}.s3.amazonaws.com/${key}`
       };
     } catch (error) {
       throw new InternalServerErrorException(error);

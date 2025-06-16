@@ -28,7 +28,6 @@ export class AuthService {
             "error": "Bad Request",
             "statusCode": 400
         }
-        Logger.log("here")
         const old_user = await this.users.findOne({where: {"email" : user.email}})
         if (old_user){
             error.message.push('this email taken')

@@ -9,9 +9,11 @@ import { UploaderService } from 'src/uploader/uploader.service';
 import { use } from 'passport';
 import { PostService } from 'src/post/post.service';
 import { FollowerService } from 'src/follower/follower.service';
+import { UserDataService } from 'src/user_data/user_data.service';
 
 @Injectable()
 export class UserService {
+    
 
     constructor(
         @InjectRepository(User) private readonly repo: Repository<User>,
@@ -19,6 +21,7 @@ export class UserService {
         private uploader: UploaderService,
         @Inject(forwardRef(() => PostService))
         private post: PostService,
+        private user_data: UserDataService
     )
     {
 
@@ -48,6 +51,16 @@ export class UserService {
         }
     }
 
+
+    public async getUserWithDataById(uuid: string) {
+        const user = await this.repo.findOne({where: {id: uuid}, relations: ['user_data']})
+        if(!user) throw BadRequestException
+        const response = {
+            ...user,
+            ...user.user_data
+        }
+        return response
+    }
 
     public async CreateUser(user: UserDTO){
         const payload = new User();

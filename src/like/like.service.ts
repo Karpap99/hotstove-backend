@@ -17,6 +17,12 @@ export class LikeService {
         const result = await this.repo.findBy({'post': post, 'likeBy': user })
     }
 
+      public async getPostLikeByIds(userId: string, postId: string){
+        const result = await this.repo.findOneBy({'post': {id: postId}, 'likeBy': {id: userId} })
+        return result
+    }
+
+
 
     public async setLike(userId: string, postId: string){
         const user = await this.user.findOne({where: {id: userId}})
@@ -28,8 +34,7 @@ export class LikeService {
         const new_like = new Likes()
         new_like.post = post
         new_like.likeBy = user
-        post.likeCount += 1
-        await this.post.save(post)
+        await this.post.increment({ id: post.id }, 'likeCount', 1);
         return await this.repo.save(new_like)
     }
 
@@ -41,8 +46,7 @@ export class LikeService {
         const existing_like = await this.repo.findOne({where: {likeBy: {id: userId} , post: {id: postId}},
         relations: ['likeBy', 'post'],})
         if(!existing_like) return
-        post.likeCount -= 1
-        await this.post.save(post)
+        await this.post.decrement({ id: post.id }, 'likeCount', 1);
         return await this.repo.delete(existing_like.id)
     }
 }

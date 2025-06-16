@@ -31,7 +31,6 @@ export class UserDataService {
 
     public async UpdateUser(uuid: string, update: UpdateDTO ,file?: Express.Multer.File){
         const u = await this.users.findOne({where:{id: uuid}})
-        Logger.log(u)
         if(!u) return {'result': "user doesn't exist"}
         const UpdateInfo = new UserDataDTO()
         UpdateInfo.user = u

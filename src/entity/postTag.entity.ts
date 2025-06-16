@@ -4,13 +4,11 @@ import { Tag } from "./tag.entity"
 import { Post } from "./post.entity"
 
 @Entity()
-export class Tags extends BaseEntity{
-    @JoinColumn()
-    @ManyToOne(()=>Tag, tag => tag.tags)
-    tag: Tag
+export class PostTag extends BaseEntity{
+   @ManyToOne(() => Tag, tag => tag.postTags)
+    tag: Tag;
 
-    @JoinColumn()
-    @ManyToOne(()=>Post, post => post.tags)
-    post: Post
+    @ManyToOne(() => Post, post => post.tags)
+    post: Post;
 
 }

@@ -1,12 +1,14 @@
-import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, OneToOne } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, OneToOne, Unique } from "typeorm"
 import { BaseEntity } from "./base.entity"
 import { User } from "./user.entity"
 
 @Entity()
+@Unique(["user"])
 export class User_Data extends BaseEntity {
 
+   
+    @OneToOne(()=>User, user => user.id, {onDelete: 'CASCADE'})
     @JoinColumn()
-    @OneToOne(()=>User, user => user.id)
     user: User
 
     @Column({default:""})
@@ -15,6 +17,6 @@ export class User_Data extends BaseEntity {
     @Column({default:""})
     description: string
 
-    @Column({default:new Date()})
+    @Column({default: ()=> "CURRENT_TIMESTAMP"})
     age: Date
 }

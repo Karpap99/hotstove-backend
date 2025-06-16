@@ -19,6 +19,8 @@ import { FollowerModule } from './follower/follower.module';
 import { LikeService } from './like/like.service';
 import { LikeModule } from './like/like.module';
 import { UserDataModule } from './user_data/user_data.module';
+import { MessageModule } from './message/message.module';
+import { TagModule } from './tag/tag.module';
 
 
 
@@ -32,11 +34,13 @@ import { UserDataModule } from './user_data/user_data.module';
     MailModule,
     FollowerModule,
     PostModule,
+    MessageModule,
     MulterModule.register({
       storage: memoryStorage()
     }),
     LikeModule,
-    UserDataModule
+    UserDataModule,
+    TagModule
     
   ],
   controllers: [],

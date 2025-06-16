@@ -43,7 +43,7 @@ export class AuthController {
     
     @Get('verify')
     public async verify(){
-        return await this.serv.verifyToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFra3JAZ21haWwuY29tIiwibmlja25hbWUiOiJrdWthZCIsImlhdCI6MTc0ODI2MTY1MCwiZXhwIjoxNzQ4MjY1MjUwfQ.62H1nXZVmUykiWbW45YCYgIw09lCnpWHPAecURAZE2I", 'access')
+        return await this.serv.verifyToken("", 'access')
     }
 
 }

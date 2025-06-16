@@ -5,4 +5,5 @@ import { BaseEntity } from "./base.entity"
 export class Lang extends BaseEntity{
     @Column()
     title: string
+    translations: any
 }

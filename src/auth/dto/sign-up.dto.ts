@@ -12,7 +12,7 @@ export class SignUpDto {
 
     @ApiProperty()
     @IsStrongPassword({
-        minLength: 7,
+        minLength: 4,
         minNumbers: 1,
         minSymbols: 1,
         minUppercase: 1,
