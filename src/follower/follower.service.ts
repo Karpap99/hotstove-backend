@@ -1,5 +1,6 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { use } from 'passport';
 import { Follower } from 'src/entity/follower.entity';
 import { User } from 'src/entity/user.entity';
 import { Repository } from 'typeorm';
@@ -14,6 +15,11 @@ export class FollowerService {
     ){
         
     }
+
+    async isFollowed(follower: string, followed: string) {
+        return (!! await this.repo.findOne({where:{followed: {id: followed}, follower:{id: follower}}}))
+    }
+    
 
 
     async FollowOn(uuid: string, followTo: string) {
@@ -40,7 +46,7 @@ export class FollowerService {
         }
     }
 
-     async UnFollowOn(uuid: string, followTo: string) {
+     async UnFollow(uuid: string, followTo: string) {
         if (uuid === followTo) throw new BadRequestException('Cannot unfollow yourself');
 
         const follower = await this.user.findOne({ where: { id: uuid } });
@@ -53,7 +59,6 @@ export class FollowerService {
             const follow = await this.repo.findOne({where: {followed: {id:followed.id}, follower: {id: follower.id}}})
             if(!follow) throw new BadRequestException('follow not found');
             const result = await this.repo.delete(follow.id);
-
             await this.user.decrement({ id: followed.id }, 'followersCount', 1);
 
             return {'success': true};
@@ -63,6 +68,21 @@ export class FollowerService {
             }
             throw err; 
         }
+    }
+
+    async FollowedByUser(uuid: string) {
+        const user = await this.user.findOne({ where: { id: uuid } });
+        if (!user) throw new BadRequestException('User not found');
+        const follows = await this.repo.find({where: {follower: {id: user.id}}, relations:['followed', 'followed.user_data']})
+        const formated = await Promise.all(follows.map( async (follow)=>{
+            return {
+                id: follow.followed.id,
+                nickname: follow.followed.nickname,
+                profile_picture: follow.followed.user_data.profile_picture
+            }
+        })
+        )       
+        return formated;
     }
 
 

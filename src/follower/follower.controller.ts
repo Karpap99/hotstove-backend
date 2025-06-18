@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { FollowerService } from './follower.service';
 
@@ -9,8 +9,22 @@ export class FollowerController {
 
     @UseGuards(AuthGuard('jwt'))
     @Post('')
-    async FollowOn(@Req() req: Request, @Body() followTo: string){
-        return await this.serv.FollowOn(req['user'].uuid, followTo)
+    async OnFollow(@Req() req: Request, @Body('followTO') followTO: string){
+        return await this.serv.FollowOn(req['user'].uuid, followTO)
+    }
+
+
+    @UseGuards(AuthGuard('jwt'))
+    @Delete('')
+    async UnFollow(@Req() req: Request, @Query('followTO') followTO: string){
+        return await this.serv.UnFollow(req['user'].uuid, followTO)
+    }
+
+    
+    @UseGuards(AuthGuard('jwt'))
+    @Get('FollowedByUser')
+    async Followed(@Req() req: Request){
+        return await this.serv.FollowedByUser(req['user'].uuid)
     }
     
 }

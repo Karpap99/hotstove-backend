@@ -5,6 +5,8 @@ import { User } from 'src/entity/user.entity';
 import { Repository } from 'typeorm';
 import { Post } from 'src/entity/post.entity';
 import { profile } from 'console';
+import { LikeService } from 'src/like/like.service';
+import { MessageLikeService } from 'src/message-like/message-like.service';
 
 @Injectable()
 export class MessageService {
@@ -13,7 +15,8 @@ export class MessageService {
     constructor(
         @InjectRepository(Message) private readonly repo: Repository<Message>,
         @InjectRepository(User) private readonly users: Repository<User>,
-        @InjectRepository(Post) private readonly posts: Repository<Post>
+        @InjectRepository(Post) private readonly posts: Repository<Post>,
+        private likeService: MessageLikeService
      )
     {
 
@@ -40,13 +43,19 @@ export class MessageService {
                         id: newMsg.user.id, 
                         nickname: newMsg.user.nickname, 
                         profile_picture: newMsg.user.user_data.profile_picture 
-                   }
+                   },
+            isLiked: false
         }
     }
-    async getAllByPost(postId: string) {
+    async getAllByPost(uuid: string, postId: string) {
         const post = await this.posts.findOne({where: {id: postId}})
         if(!post) throw new BadRequestException
         const messages = await this.repo.find({where: {post: {id: postId} }, relations:['user', 'user.user_data']})
+
+        const messageIds = messages.map((msg) => msg.id);
+        const userLikes = await this.likeService.findLikesForMessages(uuid, messageIds);
+        const likedMessageIds = new Set(userLikes.map((like) => like.message.id));
+
         const formated = await Promise.all(
             messages.map(async (message)=>
                 {
@@ -56,8 +65,18 @@ export class MessageService {
                         id: message.user.id, 
                         nickname: message.user.nickname, 
                         profile_picture: message.user.user_data.profile_picture 
-                   }
+                   },
+                   isLiked: likedMessageIds.has(message.id),
         }}))
         return formated
+    }
+
+
+    async Delete(uuid: string, messageId:string) {
+        const message = await this.repo.findOne({where: {id: messageId, user: {id: uuid} }, relations: ['post'],})
+        if (!message) throw new BadRequestException
+        await this.repo.delete({ id: messageId });
+        await this.posts.decrement({id: message.post.id}, 'messagesCount', 1)
+        return {"success": true}
     }
 }

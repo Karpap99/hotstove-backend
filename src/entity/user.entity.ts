@@ -42,4 +42,6 @@ export class User extends BaseEntity {
     @OneToMany(()=>SubMessage, msg => msg.user)
     subMessages: SubMessage[]
 
+    @OneToMany(() => SubMessage, sub => sub.receiver)
+    receivedSubMessages: SubMessage[];
 }

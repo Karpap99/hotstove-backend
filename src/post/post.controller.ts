@@ -32,6 +32,13 @@ export class PostController {
         return await this.serv.getPostsByUserId(req['user'].uuid, UserId, page)
     }
 
+
+    @UseGuards(AuthGuard("jwt"))
+    @Get("/ByUserAndFollowed")
+    public async ByUserAndFollowed(@Req() req: Request){
+        return await this.serv.ByUserAndFollowed(req['user'].uuid);
+    }
+
     @UseGuards(AuthGuard("jwt"))
     @Post()
      @UseInterceptors(FilesInterceptor('files'))

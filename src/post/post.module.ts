@@ -8,9 +8,10 @@ import { UploaderModule } from 'src/uploader/uploader.module';
 import { LikeModule } from 'src/like/like.module';
 import { Marking } from 'src/entity/marking.entity';
 import { TagsModule } from 'src/tags/tags.module';
+import { FollowerModule } from 'src/follower/follower.module';
 
 @Module({
-    imports:[ forwardRef(()=>UserModule), forwardRef(()=>LikeModule), forwardRef(()=>TagsModule), UploaderModule, TypeOrmModule.forFeature([Post, Marking]), ],
+    imports:[ forwardRef(()=>UserModule), forwardRef(()=>LikeModule), forwardRef(()=>TagsModule),forwardRef(()=>FollowerModule), UploaderModule, TypeOrmModule.forFeature([Post, Marking]), ],
     providers:[PostService],
     controllers: [PostController],
     exports: [PostService]

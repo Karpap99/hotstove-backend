@@ -21,7 +21,8 @@ export class UserService {
         private uploader: UploaderService,
         @Inject(forwardRef(() => PostService))
         private post: PostService,
-        private user_data: UserDataService
+        private user_data: UserDataService,
+        private follower: FollowerService
     )
     {
 
@@ -52,15 +53,23 @@ export class UserService {
     }
 
 
-    public async getUserWithDataById(uuid: string) {
+    public async getUserWithDataById(caller: string,uuid: string) {
+        const Caller = await this.repo.findOne({where: {id: caller}})
+        if(!Caller) throw BadRequestException
         const user = await this.repo.findOne({where: {id: uuid}, relations: ['user_data']})
         if(!user) throw BadRequestException
+        const followed = await this.follower.isFollowed(caller, uuid)
         const response = {
             ...user,
-            ...user.user_data
+            ...user.user_data,
+            followed: followed
         }
         return response
     }
+
+
+    
+    
 
     public async CreateUser(user: UserDTO){
         const payload = new User();

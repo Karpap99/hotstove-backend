@@ -21,8 +21,12 @@ export class UserController {
     @UseGuards(AuthGuard("jwt"))
     @Get("/getUserWithDataById")
     public async getUserById(@Req() req: Request, @Query("UserId") UserId: string){
-        return await this.serv.getUserWithDataById(UserId);
+        return await this.serv.getUserWithDataById(req['user'].uuid, UserId);
     }
+
+
+    
+
 
     @UseGuards(AuthGuard("jwt"))
     @Delete("/")

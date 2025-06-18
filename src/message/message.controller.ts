@@ -16,7 +16,13 @@ export class MessageController {
     @UseGuards(AuthGuard("jwt"))
     @Get("/getAllByPost")
     public async getAllByPost(@Req() req: Request, @Query("postId") postId: string){
-        return await this.serv.getAllByPost(postId);
+        return await this.serv.getAllByPost(req['user'].uuid, postId);
+    }
+
+    @UseGuards(AuthGuard("jwt"))
+    @Delete("")
+    public async Delete(@Req() req: Request, @Query("messageId") messageId: string){
+        return await this.serv.Delete(req['user'].uuid, messageId);
     }
 
 

@@ -1,7 +1,7 @@
 import { BadRequestException, forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Post} from 'src/entity/post.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { CreateDTO } from './dto/create.dto';
 import { UserService } from 'src/user/user.service';
 import { User } from 'src/entity/user.entity';
@@ -11,6 +11,7 @@ import { Markingdt } from './dto/types';
 import { Marking } from 'src/entity/marking.entity';
 import { Tag } from '@aws-sdk/client-s3';
 import { TagsService } from 'src/tags/tags.service';
+import { FollowerService } from 'src/follower/follower.service';
 
 type fl = {
     name: string,
@@ -43,6 +44,7 @@ type post_response = {
 export class PostService {
     
     
+    
     constructor(@InjectRepository(Post) private readonly repo: Repository<Post>, 
     @InjectRepository(Marking) private readonly mark: Repository<Marking>
     ,
@@ -54,29 +56,77 @@ export class PostService {
      @Inject(forwardRef(() => UploaderService))
      private upld: UploaderService,
      @Inject(forwardRef(() => TagsService))
-     private tagsSrvc: TagsService
+     private tagsSrvc: TagsService,
+     @Inject(forwardRef(() => FollowerService))
+     private follower: FollowerService
+
     )
     {
 
     }
 
     public async getPostsById(userId: string, postId: string){
-        const publication = await this.repo.findOne({where: {id: postId}, relations:['creator', 'tags','tags.tag',]})
+        const publication = await this.repo.findOne({where: {id: postId}, relations:['creator', 'creator.user_data', 'tags','tags.tag',]})
         if(!publication) throw new BadRequestException
         const like = await this.like.getPostLikeByIds(userId, postId)
         const formated_publications = {
             ...publication,
             likes: like,
-             tags: publication.tags.map((tag)=>{
+            tags: publication.tags.map((tag)=>{
                     return{
                         id: tag.tag.id,
                         content: tag.tag.content
                     }
                     
-                })
+            }),
+            creator: {
+                id: publication.creator.id,
+                nickname: publication.creator.nickname,
+                profile_picture: publication.creator.user_data.profile_picture
+            },
         }
         return formated_publications
     }
+
+    async ByUserAndFollowed(uuid: string,page: number=1, limit: number = 10) {
+        const skip = (page - 1) * limit;
+        const followed = await this.follower.FollowedByUser(uuid)
+        const followedIds = followed.map(f => f.id);
+        const [publications, total] = await this.repo.findAndCount({where: {creator:In(followedIds)}, relations:['creator','creator.user_data', 'tags','tags.tag', 'likes', 'likes.likeBy'],
+        skip,
+        take: limit, 
+        order: {
+            'createDateTime': 'DESC'
+        }})
+        const formated = await Promise.all(publications.map( async (publication)=>{
+            const like = await this.like.getPostLikeByIds(uuid, publication.id)
+            await this.repo.increment({ id: publication.id }, 'views', 1);
+            return {
+                ...publication,
+                 creator: {
+                    id: publication.creator.id,
+                    nickname: publication.creator.nickname,
+                    profile_picture: publication.creator.user_data.profile_picture
+                },
+                likes: like,
+                tags: publication.tags.map((tag)=>{
+                    return{
+                        id: tag.tag.id,
+                        content: tag.tag.content
+                    }
+                    })
+                }
+            })
+        )     
+        return {
+            data: formated,
+            page,
+            limit,
+            total,
+            totalPages: Math.ceil(total / limit)
+        };
+    }
+
 
     public async getPostsByUserId(uuid: any, userId: string, page: number, limit: number = 10) {
         const skip = (page - 1) * limit;

@@ -9,7 +9,7 @@ import { FollowerModule } from 'src/follower/follower.module';
 import { UserDataModule } from 'src/user_data/user_data.module';
 
 @Module({
-    imports:[UploaderModule, PostModule, FollowerModule, TypeOrmModule.forFeature([User]), UserDataModule],
+    imports:[UploaderModule, PostModule, FollowerModule, TypeOrmModule.forFeature([User]), UserDataModule, FollowerModule],
     providers:[UserService],
     controllers: [UserController],
     exports: [UserService]

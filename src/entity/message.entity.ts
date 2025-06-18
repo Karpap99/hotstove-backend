@@ -3,10 +3,11 @@ import { BaseEntity } from "./base.entity"
 import { Post } from "./post.entity"
 import { User } from "./user.entity"
 import { SubMessage } from "./submessage.entity"
+import { MessageLike} from "./messageLike.entity"
 
 @Entity()
 export class Message extends BaseEntity{
-    @ManyToOne(()=>Post, post => post.id)
+    @ManyToOne(()=>Post, post => post.messages)
     post: Post
 
     @ManyToOne(()=>User, user=>user.messages)
@@ -16,8 +17,14 @@ export class Message extends BaseEntity{
     text: string
 
     @Column({default: 0})
-    likes: number
+    likesCount: number
+
+    @Column({default:0})
+    submessagesCount: number
 
     @OneToMany(()=>SubMessage, submessage => submessage.message)
     submessages: SubMessage[]
+
+    @OneToMany(()=>MessageLike, like => like.message)
+    likes: MessageLike[]
 }
