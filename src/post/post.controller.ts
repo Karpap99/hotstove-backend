@@ -10,8 +10,8 @@ export class PostController {
 
     @UseGuards(AuthGuard("jwt"))
     @Get()
-    public async getAll(@Req() req: Request, @Query('page') page: number = 1, @Query('limit') limit: number = 10){
-        return await this.serv.getAll(req['user'].uuid, page)
+    public async getAll(@Req() req: Request, @Query('page') page: number = 1, @Query('limit') limit: number = 10,  @Query('query') query: string){
+        return await this.serv.getAll(req['user'].uuid, page,limit, query)
     }
 
     @Get("test")
@@ -27,6 +27,12 @@ export class PostController {
     }
 
     @UseGuards(AuthGuard("jwt"))
+    @Get('/byIdWithMarking')
+    public async getByIdWithMarking(@Req() req: Request, @Query('postId') postId: string){
+        return await this.serv.getPostsByIdWithMarking(req['user'].uuid, postId)
+    }
+
+    @UseGuards(AuthGuard("jwt"))
     @Get('/getAllByUser')
     public async getByUser(@Req() req: Request, @Query('UserId') UserId: string, @Query('page') page: number = 1, @Query('limit') limit: number = 10){
         return await this.serv.getPostsByUserId(req['user'].uuid, UserId, page)
@@ -39,12 +45,21 @@ export class PostController {
         return await this.serv.ByUserAndFollowed(req['user'].uuid);
     }
 
+    
+    @UseGuards(AuthGuard("jwt"))
+    @Get("/GetLikedPosts")
+    public async getLikedPosts(@Req() req: Request){
+        return await this.serv.getLikedPosts(req['user'].uuid)
+    }
+
+
     @UseGuards(AuthGuard("jwt"))
     @Post()
-     @UseInterceptors(FilesInterceptor('files'))
+    @UseInterceptors(FilesInterceptor('files'))
     public async create(@UploadedFiles() files: Express.Multer.File[],@Req() req: Request, @Body() data : {post: CreateDTO, tags: string}){
         return await this.serv.CreatePost(req['user'].uuid, CreateDTO.from({title: data['title'],description: data['description'], marking: data['marking']}), files, data.tags)
     }
+
 
     @UseGuards(AuthGuard("jwt"))
     @Put()

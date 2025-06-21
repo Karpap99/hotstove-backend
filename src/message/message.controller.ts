@@ -20,6 +20,12 @@ export class MessageController {
     }
 
     @UseGuards(AuthGuard("jwt"))
+    @Put("")
+    public async update(@Req() req: Request, @Body('data') data: {messageId:string, text: string}){
+        return await this.serv.UpdateMessage(req['user'].uuid, data);
+    }
+
+    @UseGuards(AuthGuard("jwt"))
     @Delete("")
     public async Delete(@Req() req: Request, @Query("messageId") messageId: string){
         return await this.serv.Delete(req['user'].uuid, messageId);

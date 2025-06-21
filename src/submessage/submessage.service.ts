@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, Post } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { SubMessage } from 'src/entity/submessage.entity';
@@ -18,6 +18,7 @@ export class SubMessageService {
     @InjectRepository(Message)
     private readonly messages: Repository<Message>,
     private likeService: SubmessageLikeService
+
   ) {}
 
   async sendSubMessage(uuid: string, data: { messageId: string; text: string; receiverId: string }) {
@@ -89,4 +90,24 @@ export class SubMessageService {
       isLiked: likedMessageIds.has(sub.id),
     }));
   }
+
+  async Delete(uuid: string, messageId:string) {
+        const message = await this.repo.findOne({where: {id: messageId, user: {id: uuid} }, relations: ['message'],})
+        if (!message) throw new BadRequestException
+        await this.repo.delete({ id: messageId });
+        await this.messages.decrement({id: message.message.id}, 'messagesCount', 1)
+        return {"success": true}
+    }
+
+  async UpdateMessage(uuid: string, data: { messageId: string; text: string; }) {
+        const user = await this.users.findOne({where: {id: uuid}})
+        if(!user) throw new BadRequestException
+       
+        const message = await this.repo.findOne({where: {id:data.messageId, user:{id:uuid}}})
+        if(!message) throw new BadRequestException("")
+        message.text = data.text
+        
+        return await this.repo.save(message)
+    }
+
 }

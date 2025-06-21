@@ -29,22 +29,34 @@ export class UserDataService {
         return {"result":userdata}
     }
 
-    public async UpdateUser(uuid: string, update: UpdateDTO ,file?: Express.Multer.File){
-        const u = await this.users.findOne({where:{id: uuid}})
-        if(!u) return {'result': "user doesn't exist"}
-        const UpdateInfo = new UserDataDTO()
-        UpdateInfo.user = u
-        if(file) {
-            const isPublic = update.isPublic === 'true' ? true : false
-            const pfp = await this.uploader.uploadProfilePhoto({file, isPublic})
-            UpdateInfo.profile_picture = pfp.url
-        }
-        if(update.age) {
-            UpdateInfo.age = new Date(update.age)
-        }
-        UpdateInfo.description = update.description
-        const result = await this.data.save(UpdateInfo)
-        return {'res' : "updated", 'result': result}
+    public async UpdateUser(uuid: string, update: UpdateDTO, file?: Express.Multer.File) {
+    const u = await this.users.findOne({ where: { id: uuid } });
+    if (!u) return { result: "user doesn't exist" };
+
+    let userData = await this.data.findOne({ where: { user: { id: uuid } }, relations: ['user'] });
+
+    if (!userData) {
+        userData = new User_Data();
+        userData.user = u;
     }
+
+    if (file) {
+        const isPublic = update.isPublic === 'true';
+        const pfp = await this.uploader.uploadProfilePhoto({ file, isPublic });
+        userData.profile_picture = pfp.url;
+    }
+
+    if (update.age) {
+        userData.age = new Date(update.age);
+    }
+
+    if (update.description !== undefined) {
+        userData.description = update.description;
+    }
+
+    const result = await this.data.save(userData);
+    return { res: "updated", result };
+}
+
     
 }

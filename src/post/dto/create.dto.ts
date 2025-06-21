@@ -36,6 +36,7 @@ export class CreateDTO implements Readonly<CreateDTO> {
 
 
 
+
   
 
   public static from(dto: Partial<CreateDTO>) {
@@ -56,17 +57,18 @@ export class CreateDTO implements Readonly<CreateDTO> {
     });
   }
 
-  public WithoutMarking() {
+  public static WithoutMarking(dto: CreateDTO) {
     return {
-      id: this.id,
-      title: this.title,
-      description: this.description,
-      title_picture: this.title_picture,
-      creator: this.creator,
-      views: this.views,
-      likes: this.likes
+      id: dto.id,
+      title: dto.title,
+      description: dto.description,
+      title_picture: dto.title_picture,
+      creator: dto.creator,
+      views: dto.views,
+      likes: dto.likes,
     };
   }
+
 
   public toEntity(dto: Partial<CreateDTO>) {
     const it = new Post();

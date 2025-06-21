@@ -72,6 +72,16 @@ export class MessageService {
     }
 
 
+    async UpdateMessage(uuid: string, data: { messageId: string; text: string; }) {
+        const user = await this.users.findOne({where: {id: uuid}})
+        if(!user) throw new BadRequestException
+        const message = await this.repo.findOne({where: {id:data.messageId, user:{id:uuid}}})
+        if(!message) throw new BadRequestException("")
+        message.text = data.text
+        return await this.repo.save(message)
+    }
+
+
     async Delete(uuid: string, messageId:string) {
         const message = await this.repo.findOne({where: {id: messageId, user: {id: uuid} }, relations: ['post'],})
         if (!message) throw new BadRequestException

@@ -6,7 +6,7 @@ export class LoginDto {
     public email: string;
 
     @IsStrongPassword({
-        minLength: 7,
+         minLength: 4,
         minNumbers: 1,
         minSymbols: 1,
         minUppercase: 1,

@@ -4,6 +4,7 @@ import { User } from "./user.entity"
 import { Likes } from "./likes.entity"
 import { Message } from "./message.entity"
 import { PostTag } from "./postTag.entity"
+import { Marking } from "./marking.entity"
 
 @Entity()
 export class Post extends BaseEntity{
@@ -12,7 +13,6 @@ export class Post extends BaseEntity{
 
     @Column()
     description: string
-
 
     @Column({default: ''})
     title_picture: string
@@ -36,10 +36,10 @@ export class Post extends BaseEntity{
     @OneToMany(() => Likes, likes => likes.post,)
     likes: Likes[]
 
-
     @OneToMany(()=>Message, msg => msg.post)
     messages: Message[]
-
     
+    @OneToOne(()=>Marking, mrk=> mrk.post,{ cascade: true, eager: true, nullable: true })
+    marking: Marking
 
 }

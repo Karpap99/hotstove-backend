@@ -31,7 +31,7 @@ export class UploaderService {
         });
     }
 
-    async uploadPostPhoto(file: Express.Multer.File) {
+    async uploadPostFile(file: Express.Multer.File) {
       const key = `post_pictures/${uuidv4()}`;
       try {
         const command = new PutObjectCommand({

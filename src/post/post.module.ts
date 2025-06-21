@@ -11,7 +11,7 @@ import { TagsModule } from 'src/tags/tags.module';
 import { FollowerModule } from 'src/follower/follower.module';
 
 @Module({
-    imports:[ forwardRef(()=>UserModule), forwardRef(()=>LikeModule), forwardRef(()=>TagsModule),forwardRef(()=>FollowerModule), UploaderModule, TypeOrmModule.forFeature([Post, Marking]), ],
+    imports:[ forwardRef(()=>UserModule), forwardRef(()=>LikeModule), forwardRef(()=>TagsModule),forwardRef(()=>FollowerModule), UploaderModule, TypeOrmModule.forFeature([Post, Marking])],
     providers:[PostService],
     controllers: [PostController],
     exports: [PostService]

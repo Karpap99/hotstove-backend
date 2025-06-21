@@ -17,12 +17,17 @@ export class LikeService {
         const result = await this.repo.findBy({'post': post, 'likeBy': user })
     }
 
-      public async getPostLikeByIds(userId: string, postId: string){
-        const result = await this.repo.findOneBy({'post': {id: postId}, 'likeBy': {id: userId} })
-        return result
+
+    public async getPostLikeByIds(userId: string, postId: string){
+        return await this.repo.findOneBy({'post': {id: postId}, 'likeBy': {id: userId} })
     }
 
 
+    public async GetLikedPosts(userId: string): Promise<[string[], Likes[]]>{
+        const res = await this.repo.find({where:{likeBy:{id: userId}}, relations:['post']})
+        const ids = res.map((val)=> val.post.id)
+        return [ids, res]
+    }
 
     public async setLike(userId: string, postId: string){
         const user = await this.user.findOne({where: {id: userId}})

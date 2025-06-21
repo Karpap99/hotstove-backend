@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { SubMessageService } from './submessage.service';
 
@@ -17,5 +17,17 @@ export class SubmessageController {
         public async getAllByPost(@Req() req: Request, @Query("messageId") messageId: string){
             return await this.serv.getAllByMessage(req['user'].uuid, messageId);
         }
+
+    @UseGuards(AuthGuard("jwt"))
+    @Delete("")
+    public async Delete(@Req() req: Request, @Query("messageId") messageId: string){
+        return await this.serv.Delete(req['user'].uuid, messageId);
+     }
+
+    @UseGuards(AuthGuard("jwt"))
+    @Put("")
+    public async update(@Req() req: Request, @Body('data') data: {messageId:string, text: string}){
+        return await this.serv.UpdateMessage(req['user'].uuid, data);
+    }
 
 }

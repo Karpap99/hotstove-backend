@@ -7,7 +7,7 @@ import { Markingdt } from "src/post/dto/types"
 @Entity()
 export class Marking extends BaseEntity{
     @JoinColumn()
-    @OneToOne(()=>Post, post => post.id)
+    @OneToOne(()=>Post, post => post.marking, { onDelete: 'CASCADE', nullable: false })
     post: Post
 
     @Column({type:"json"})
