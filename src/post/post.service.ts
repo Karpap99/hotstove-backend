@@ -338,7 +338,6 @@ export class PostService {
         } catch (e) {
             throw new BadRequestException('Invalid marking JSON');
         }
-        const contentFiles = files.filter(file => file.originalname !== 'title_picture');
 
         const uploadResults = await Promise.all(
             files.map(async (file) => {
@@ -384,9 +383,9 @@ export class PostService {
     public async DeletePost(userId: string, postId: string) {
         const user = await this.users.getUserById(userId);
         if(!user) return BadRequestException
-        const post = await this.repo.findOneBy({id: postId})
+        const post = await this.repo.findOne({where: {id: postId}, relations:['creator']})
         if(!post) return BadRequestException
-        if(post.creator != user) return BadRequestException
+        if(post.creator.id != userId) return BadRequestException
         return await this.repo.delete({id: post.id})
     }
 

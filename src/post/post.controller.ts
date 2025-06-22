@@ -73,8 +73,8 @@ export class PostController {
 
     @UseGuards(AuthGuard("jwt"))
     @Delete()
-    public async delete(@Req() req: Request, @Body('data') data: { postId: string}){
-        return await this.serv.DeletePost(req['user'].uuid, data.postId)
+    public async delete(@Req() req: Request, @Query('postId') postId: string){
+        return await this.serv.DeletePost(req['user'].uuid, postId)
     }
 
 }
