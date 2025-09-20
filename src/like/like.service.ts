@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, Logger } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Likes } from "src/entity/likes.entity";
 import { Post } from "src/entity/post.entity";
@@ -15,6 +15,7 @@ export class LikeService {
 
   public async getPostLike(user: User, post: Post) {
     const result = await this.repo.findBy({ post: post, likeBy: user });
+    return result;
   }
 
   public async getPostLikeByIds(userId: string, postId: string) {

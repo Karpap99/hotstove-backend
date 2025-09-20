@@ -5,7 +5,6 @@ import { MessageService } from "./message.service";
 import { MessageController } from "./message.controller";
 import { User } from "src/entity/user.entity";
 import { Post } from "src/entity/post.entity";
-import { LikeModule } from "src/like/like.module";
 import { MessageLikeModule } from "src/message-like/message-like.module";
 
 @Module({

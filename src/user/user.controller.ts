@@ -17,7 +17,7 @@ export class UserController {
 
   @UseGuards(AuthGuard("jwt"))
   @Get()
-  public async getAll(@Req() req: Request) {
+  public async getAll() {
     return await this.serv.getAll();
   }
 

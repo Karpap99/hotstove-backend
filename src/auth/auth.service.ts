@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  Logger,
   UnauthorizedException,
   UsePipes,
   ValidationPipe,
@@ -17,6 +18,7 @@ import * as bcrypt from "bcrypt";
 import { ConfigService } from "@nestjs/config";
 import { TokenDto } from "./dto/token.dto";
 import { ResponseDTO } from "src/user/dto/response.dto";
+import { token_payload } from "./types";
 
 @UsePipes(new ValidationPipe({ transform: true }))
 @Injectable()
@@ -46,7 +48,7 @@ export class AuthService {
     new_user.password = await bcrypt.hash(new_user.password, salt);
 
     const result = await this.userService.CreateUser(new_user);
-    const { access, refresh } = await this.getToken(
+    const { access, refresh } = this.getToken(
       TokenDto.from(result.id, result.email, result.nickname),
     );
     const response = ResponseDTO.from(result);
@@ -74,7 +76,8 @@ export class AuthService {
   }
 
   async reAuth(refreshTKN: string) {
-    const result = await this.verifyToken(refreshTKN, "refresh");
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const result: token_payload = await this.verifyToken(refreshTKN, "refresh");
     const error = {
       message: [""],
       error: "Bad Request",
@@ -86,7 +89,7 @@ export class AuthService {
       throw new BadRequestException(error);
     }
     const tokenDTO = TokenDto.from(user.id, user.email, user.nickname);
-    const { access, refresh } = await this.getToken(tokenDTO);
+    const { access, refresh } = this.getToken(tokenDTO);
     const response = ResponseDTO.from(user);
     return { result: response, access: access, refresh: refresh };
   }
@@ -94,7 +97,7 @@ export class AuthService {
   async login(usr: LoginDto) {
     const user = await this.validateUser(usr);
     const tokenDTO = TokenDto.from(user.id, user.email, user.nickname);
-    const { access, refresh } = await this.getToken(tokenDTO);
+    const { access, refresh } = this.getToken(tokenDTO);
     const response = ResponseDTO.from(user);
     return { result: response, access: access, refresh: refresh };
   }
@@ -111,27 +114,27 @@ export class AuthService {
         algorithms: ["HS256"],
       });
     } catch (e) {
+      Logger.log(e);
       throw new UnauthorizedException();
     }
   }
 
-  async getToken(user: TokenDto) {
-    const access = this.jwtService.sign(
-      { ...user },
-      {
-        secret: this.configService.get<string>("SECRET_ACCESS"),
-        expiresIn: "1h",
-        algorithm: "HS256",
-      },
-    );
-    const refresh = this.jwtService.sign(
-      { ...user },
-      {
-        secret: this.configService.get<string>("SECRET_REFRESH"),
-        expiresIn: "60d",
-        algorithm: "HS256",
-      },
-    );
+  getToken(user: TokenDto) {
+    const payload = {
+      uuid: user.uuid,
+      email: user.email,
+      nickname: user.nickname,
+    };
+    const access = this.jwtService.sign(payload, {
+      secret: this.configService.get<string>("SECRET_ACCESS"),
+      expiresIn: "1h",
+      algorithm: "HS256",
+    });
+    const refresh = this.jwtService.sign(payload, {
+      secret: this.configService.get<string>("SECRET_REFRESH"),
+      expiresIn: "60d",
+      algorithm: "HS256",
+    });
     return { access, refresh };
   }
 }

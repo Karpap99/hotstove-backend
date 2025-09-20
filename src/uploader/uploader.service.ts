@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException } from "@nestjs/common";
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import {
   S3Client,
@@ -71,6 +75,7 @@ export class UploaderService {
         .jpeg({ quality })
         .toBuffer();
     } catch (err) {
+      Logger.log(err);
       throw new InternalServerErrorException(
         "Failed to resize/convert image to JPEG",
       );
@@ -125,7 +130,7 @@ export class UploaderService {
     }
   }
 
-  async getPfpUrl(key: string) {
+  getPfpUrl(key: string) {
     return {
       url: `${this.endpoint}/${this.bucketName}/${key}`,
     };

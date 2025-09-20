@@ -20,15 +20,16 @@ export class AuthController {
 
   @UseGuards(AuthGuard("jwt"))
   @Get("/refresh_token")
-  public async getToken(@Req() req: Request) {
+  public getToken(@Req() req: Request) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
     const token = req.headers["authorization"].replace("Bearer ", "");
-    return await this.serv.getToken(token);
+    return this.serv.getToken(token);
   }
 
   @UseGuards(AuthGuard("local"))
   @Post("logout")
-  public async logout() {
-    return await "";
+  public logout() {
+    return "";
   }
 
   @Get("reauth")
@@ -38,6 +39,7 @@ export class AuthController {
 
   @Get("verify")
   public async verify() {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return await this.serv.verifyToken("", "access");
   }
 }

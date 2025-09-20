@@ -15,7 +15,6 @@ import { PostService } from "./post.service";
 import { AuthGuard } from "@nestjs/passport";
 import { CreateDTO } from "./dto/create.dto";
 import { FilesInterceptor } from "@nestjs/platform-express";
-import { Marking } from "src/entity/marking.entity";
 @Controller("post")
 export class PostController {
   constructor(private serv: PostService) {}
@@ -97,12 +96,12 @@ export class PostController {
   @UseGuards(AuthGuard("jwt"))
   @Put()
   @UseInterceptors(FilesInterceptor("files"))
-  public async update(
+  public update(
     @UploadedFiles()
     files: Express.Multer.File[],
     @Req() req: Request,
   ) {
-    return await this.serv.UpdatePost(req["user"].uuid);
+    return this.serv.UpdatePost(req["user"].uuid);
   }
 
   @UseGuards(AuthGuard("jwt"))

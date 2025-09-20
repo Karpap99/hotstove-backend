@@ -1,7 +1,6 @@
 // base.entity.ts
 import {
   PrimaryGeneratedColumn,
-  Column,
   UpdateDateColumn,
   CreateDateColumn,
 } from "typeorm";

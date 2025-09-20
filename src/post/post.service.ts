@@ -3,22 +3,18 @@ import {
   forwardRef,
   Inject,
   Injectable,
-  Logger,
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Post } from "src/entity/post.entity";
 import { ILike, In, Repository } from "typeorm";
 import { CreateDTO } from "./dto/create.dto";
 import { UserService } from "src/user/user.service";
-import { User } from "src/entity/user.entity";
 import { LikeService } from "src/like/like.service";
 import { UploaderService } from "src/uploader/uploader.service";
 import { Markingdt } from "./dto/types";
 import { Marking } from "src/entity/marking.entity";
-import { Tag } from "@aws-sdk/client-s3";
 import { TagsService } from "src/tags/tags.service";
 import { FollowerService } from "src/follower/follower.service";
-
 
 type element = {
   component: string;
@@ -39,6 +35,9 @@ export type post_short = {
 
 @Injectable()
 export class PostService {
+  UpdatePost(uuid: any) {
+    throw new Error("Method not implemented.");
+  }
   constructor(
     @InjectRepository(Post) private readonly repo: Repository<Post>,
     @InjectRepository(Marking) private readonly mark: Repository<Marking>,
@@ -480,5 +479,4 @@ export class PostService {
     return assign(deepCopy);
   }
 
-  public async UpdatePost(userId: string) {}
 }

@@ -1,6 +1,6 @@
-import { BadRequestException, Injectable, Logger } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { use } from "passport";
+import { SMALL_AVATAR } from "src/constants";
 import { Follower } from "src/entity/follower.entity";
 import { User } from "src/entity/user.entity";
 import { Repository } from "typeorm";
@@ -58,7 +58,7 @@ export class FollowerService {
         where: { followed: { id: followed.id }, follower: { id: follower.id } },
       });
       if (!follow) throw new BadRequestException("follow not found");
-      const result = await this.repo.delete(follow.id);
+      await this.repo.delete(follow.id);
       await this.user.decrement({ id: followed.id }, "followersCount", 1);
 
       return { success: true };
@@ -78,11 +78,14 @@ export class FollowerService {
       relations: ["followed", "followed.user_data"],
     });
     const formated = await Promise.all(
-      follows.map(async (follow) => {
+      follows.map((follow) => {
         return {
           id: follow.followed.id,
           nickname: follow.followed.nickname,
-          profile_picture: follow.followed.user_data.profile_picture,
+          profile_picture: SMALL_AVATAR.replace(
+            "default",
+            follow.followed.user_data.profile_picture,
+          ),
         };
       }),
     );

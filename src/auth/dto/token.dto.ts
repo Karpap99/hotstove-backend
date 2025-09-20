@@ -1,15 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import {
-  IsBoolean,
-  IsEmail,
-  IsPhoneNumber,
-  IsString,
-  IsStrongPassword,
-  IsUUID,
-  Length,
-} from "class-validator";
-import { LoginDto } from "./login.dto";
-import { SignUpDto } from "./sign-up.dto";
+import { IsEmail, IsString, IsUUID } from "class-validator";
 
 export class TokenDto {
   @ApiProperty()

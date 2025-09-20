@@ -20,7 +20,7 @@ export class UploaderController {
 
   @Post("/file")
   @UseInterceptors(FileInterceptor("file"))
-  async uploadFile(
+  uploadFile(
     @UploadedFile(
       new ParseFilePipe({
         validators: [
@@ -36,7 +36,6 @@ export class UploaderController {
     file: Express.Multer.File,
     @Body("isPublic") isPublic: string,
   ) {
-    const isPublicBool = isPublic === "true" ? true : false;
     return "";
   }
 
@@ -66,7 +65,7 @@ export class UploaderController {
   }
 
   @Get(":key")
-  async getFileUrl(@Param("key") key: string) {
+  getFileUrl(@Param("key") key: string) {
     return this.uploaderService.getFileUrl(key);
   }
 

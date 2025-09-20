@@ -12,6 +12,7 @@ import { UploaderService } from "src/uploader/uploader.service";
 import { PostService } from "src/post/post.service";
 import { FollowerService } from "src/follower/follower.service";
 import { UserDataService } from "src/user_data/user_data.service";
+import { BIG_AVATAR, SMALL_AVATAR } from "src/constants";
 
 @Injectable()
 export class UserService {
@@ -36,8 +37,10 @@ export class UserService {
       },
     });
     if (!result) throw new BadRequestException("No user");
-    const image_scheme = `${process.env.MINIO_ENDPOINT + "/" + process.env.MINIO_BUCKET_NAME}/profile_pictures/32x32_`;
-    result.user_data.profile_picture = `${image_scheme + result.user_data.profile_picture}.jpeg`
+    result.user_data.profile_picture = SMALL_AVATAR.replace(
+      "default",
+      result.user_data.profile_picture,
+    );
     return result;
   }
 
@@ -52,8 +55,10 @@ export class UserService {
       error.message.push(`User with id ${requestedUser} doen't exist`);
       throw new BadRequestException(error);
     }
-    const image_scheme = `${process.env.MINIO_ENDPOINT + "/" + process.env.MINIO_BUCKET_NAME}/profile_pictures/256x256_`;
-    user.user_data.profile_picture = `${image_scheme + user.user_data.profile_picture}.jpeg`;
+    user.user_data.profile_picture = BIG_AVATAR.replace(
+      "default",
+      user.user_data.profile_picture,
+    );
     return user;
   }
 
@@ -66,11 +71,13 @@ export class UserService {
     });
     if (!user) throw BadRequestException;
     const followed = await this.follower.isFollowed(caller, uuid);
-    const image_scheme = `${process.env.MINIO_ENDPOINT + "/" + process.env.MINIO_BUCKET_NAME}/profile_pictures/256x256_`;
     const response = {
       ...user,
       ...user.user_data,
-      profile_picture: `${image_scheme + user.user_data.profile_picture}.jpeg`,
+      profile_picture: BIG_AVATAR.replace(
+        "default",
+        user.user_data.profile_picture,
+      ),
       followed: followed,
     };
     return response;

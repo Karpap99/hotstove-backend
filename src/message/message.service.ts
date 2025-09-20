@@ -5,6 +5,7 @@ import { User } from "src/entity/user.entity";
 import { Repository } from "typeorm";
 import { Post } from "src/entity/post.entity";
 import { MessageLikeService } from "src/message-like/message-like.service";
+import { SMALL_AVATAR } from "src/constants";
 
 @Injectable()
 export class MessageService {
@@ -38,7 +39,10 @@ export class MessageService {
       user: {
         id: newMsg.user.id,
         nickname: newMsg.user.nickname,
-        profile_picture: newMsg.user.user_data.profile_picture,
+        profile_picture: SMALL_AVATAR.replace(
+          "default",
+          newMsg.user.user_data.profile_picture,
+        ),
       },
       isLiked: false,
     };
@@ -58,8 +62,6 @@ export class MessageService {
     );
     const likedMessageIds = new Set(userLikes.map((like) => like.message.id));
 
-    const image_scheme = `${process.env.MINIO_ENDPOINT + "/" + process.env.MINIO_BUCKET_NAME}/profile_pictures/256x256_`;
-
     const formated = await Promise.all(
       messages.map((message) => {
         return {
@@ -67,7 +69,10 @@ export class MessageService {
           user: {
             id: message.user.id,
             nickname: message.user.nickname,
-            profile_picture: `${image_scheme + message.user.user_data.profile_picture}.jpeg`,
+            profile_picture: SMALL_AVATAR.replace(
+              "default",
+              message.user.user_data.profile_picture,
+            ),
           },
           isLiked: likedMessageIds.has(message.id),
         };

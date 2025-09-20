@@ -7,7 +7,6 @@ import { PassportModule } from "@nestjs/passport";
 import { LocalStrategy } from "./local.strategy";
 import { JwtModule, JwtService } from "@nestjs/jwt";
 import { ConfigModule, ConfigService } from "@nestjs/config";
-import { UserService } from "src/user/user.service";
 import { JwtStrategy } from "./jwt.strategy";
 import { UploaderService } from "src/uploader/uploader.service";
 import { UserModule } from "src/user/user.module";
@@ -18,11 +17,11 @@ import { UserModule } from "src/user/user.module";
     forwardRef(() => UserModule),
     JwtModule.registerAsync({
       imports: [ConfigModule],
-      useFactory: async (config: ConfigService) => ({
+      useFactory: (config: ConfigService) => ({
         secret: config.get<string>("SECRET_ACCESS"),
         secretOrPrivateKey: config.get<string>("SECRET_ACCESS"),
         signOptions: {
-          expiresIn: 50,
+          expiresIn: "50s",
         },
       }),
       inject: [ConfigService],

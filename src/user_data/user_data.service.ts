@@ -1,10 +1,16 @@
-import { BadRequestException, forwardRef, Inject, Injectable } from "@nestjs/common";
+import {
+  BadRequestException,
+  forwardRef,
+  Inject,
+  Injectable,
+} from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "src/entity/user.entity";
 import { Repository } from "typeorm";
 import { UploaderService } from "src/uploader/uploader.service";
 import { User_Data } from "src/entity/user_data.entity";
 import { UpdateDTO } from "./dto/update.dto";
+import { BIG_AVATAR } from "src/constants";
 @Injectable()
 export class UserDataService {
   constructor(
@@ -17,7 +23,10 @@ export class UserDataService {
   async getUserDataById(uuid: string) {
     const userdata = await this.data.findOne({ where: { user: { id: uuid } } });
     if (!userdata) throw new BadRequestException("No user");
-    userdata.profile_picture = `${process.env.MINIO_ENDPOINT + "/" + process.env.MINIO_BUCKET_NAME}/profile_pictures/256x256_${userdata.profile_picture}.jpeg`;
+    userdata.profile_picture = BIG_AVATAR.replace(
+      "default",
+      userdata.profile_picture,
+    );
     return { result: userdata };
   }
 
@@ -54,7 +63,10 @@ export class UserDataService {
     }
 
     const result = await this.data.save(userData);
-    result.profile_picture = `${process.env.MINIO_ENDPOINT + "/" + process.env.MINIO_BUCKET_NAME}/profile_pictures/256x256_${result.profile_picture}.jpeg`;
+    result.profile_picture = BIG_AVATAR.replace(
+      "default",
+      result.profile_picture,
+    );
     return { res: "updated", result };
   }
 }
