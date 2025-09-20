@@ -1,10 +1,11 @@
+/* eslint-disable prettier/prettier */
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { configService } from './config/config.service';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { UploaderModule } from './uploader/uploader.module';
-import "reflect-metadata"
+import 'reflect-metadata';
 import { MulterModule } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { PostModule } from './post/post.module';
@@ -18,9 +19,6 @@ import { MessageLikeModule } from './message-like/message-like.module';
 import { SubmessageLikeModule } from './submessage-like/submessage-like.module';
 import { SubmessageModule } from './submessage/submessage.module';
 
-
-
-
 @Module({
   imports: [
     TypeOrmModule.forRoot(configService.getTypeOrmConfig()),
@@ -32,14 +30,14 @@ import { SubmessageModule } from './submessage/submessage.module';
     PostModule,
     MessageModule,
     MulterModule.register({
-      storage: memoryStorage()
+      storage: memoryStorage(),
     }),
     LikeModule,
     UserDataModule,
     TagModule,
     MessageLikeModule,
     SubmessageLikeModule,
-    SubmessageModule
+    SubmessageModule,
   ],
   controllers: [],
   providers: [],

@@ -1,17 +1,17 @@
-import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Message } from 'src/entity/message.entity';
-import { MessageService } from './message.service';
-import { MessageController } from './message.controller';
-import { User } from 'src/entity/user.entity';
-import { Post } from 'src/entity/post.entity';
-import { LikeModule } from 'src/like/like.module';
-import { MessageLikeModule } from 'src/message-like/message-like.module';
+import { Module } from "@nestjs/common";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { Message } from "src/entity/message.entity";
+import { MessageService } from "./message.service";
+import { MessageController } from "./message.controller";
+import { User } from "src/entity/user.entity";
+import { Post } from "src/entity/post.entity";
+import { LikeModule } from "src/like/like.module";
+import { MessageLikeModule } from "src/message-like/message-like.module";
 
 @Module({
-    imports:[TypeOrmModule.forFeature([Message, User, Post]), MessageLikeModule],
-    providers:[MessageService],
-    controllers: [MessageController],
-    exports: [MessageModule]
+  imports: [TypeOrmModule.forFeature([Message, User, Post]), MessageLikeModule],
+  providers: [MessageService],
+  controllers: [MessageController],
+  exports: [MessageModule],
 })
 export class MessageModule {}

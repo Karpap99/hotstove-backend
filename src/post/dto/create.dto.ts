@@ -1,12 +1,16 @@
-
-import { ApiProperty } from '@nestjs/swagger';
-import { IsJSON, IsNumber, IsOptional, IsString,IsUUID, } from 'class-validator';
-import { Post } from 'src/entity/post.entity';
-import { User } from 'src/entity/user.entity';
-import { Markingdt } from './types';
-import { emit } from 'process';
-import { Likes } from 'src/entity/likes.entity';
-
+import { ApiProperty } from "@nestjs/swagger";
+import {
+  IsJSON,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+} from "class-validator";
+import { Post } from "src/entity/post.entity";
+import { User } from "src/entity/user.entity";
+import { Markingdt } from "./types";
+import { emit } from "process";
+import { Likes } from "src/entity/likes.entity";
 
 export class CreateDTO implements Readonly<CreateDTO> {
   @IsUUID()
@@ -14,34 +18,29 @@ export class CreateDTO implements Readonly<CreateDTO> {
   id: string;
 
   @ApiProperty({ required: true })
-  title: string
+  title: string;
 
-  @ApiProperty({required: false})
-  description: string
+  @ApiProperty({ required: false })
+  description: string;
 
-  @ApiProperty({required: false, default: ""})
-  title_picture: string
+  @ApiProperty({ required: false, default: "" })
+  title_picture: string;
 
-  @ApiProperty({required: false})
-  marking: string
+  @ApiProperty({ required: false })
+  marking: string;
 
-  @ApiProperty({ required:false})
+  @ApiProperty({ required: false })
   creator: User;
 
-  @ApiProperty({ required:false , default: 0 })
+  @ApiProperty({ required: false, default: 0 })
   views: number;
 
-  @ApiProperty({ required:false})
+  @ApiProperty({ required: false })
   likes: Likes[];
-
-
-
-
-  
 
   public static from(dto: Partial<CreateDTO>) {
     const it = new CreateDTO();
-    const result = Object.assign({}, it, dto)
+    const result = Object.assign({}, it, dto);
     return result;
   }
 
@@ -53,7 +52,7 @@ export class CreateDTO implements Readonly<CreateDTO> {
       title_picture: entity.title_picture,
       creator: entity.creator,
       views: entity.views,
-      likes: entity.likes
+      likes: entity.likes,
     });
   }
 
@@ -68,7 +67,6 @@ export class CreateDTO implements Readonly<CreateDTO> {
       likes: dto.likes,
     };
   }
-
 
   public toEntity(dto: Partial<CreateDTO>) {
     const it = new Post();

@@ -1,24 +1,23 @@
-import { MailerService } from '@nestjs-modules/mailer';
-import { Injectable } from '@nestjs/common';
+import { MailerService } from "@nestjs-modules/mailer";
+import { Injectable } from "@nestjs/common";
 
 @Injectable()
 export class MailService {
-  constructor(private readonly mailerService: MailerService){}
+  constructor(private readonly mailerService: MailerService) {}
 
-  public async SendVerification(userEmail: string){
-    await this
-      .mailerService
+  public async SendVerification(userEmail: string) {
+    await this.mailerService
       .sendMail({
         to: "test@gmail.com",
-        subject: 'Testing Nest MailerModule ✔',
-        text: 'welcome',
-        html: '<b>welcome</b>',
+        subject: "Testing Nest MailerModule ✔",
+        text: "welcome",
+        html: "<b>welcome</b>",
       })
       .then((success) => {
-        console.log(success)
+        console.log(success);
       })
       .catch((err) => {
-        console.log(err)
+        console.log(err);
       });
   }
 }

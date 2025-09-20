@@ -1,31 +1,36 @@
-
-import { ApiExpectationFailedResponse, ApiProperty } from '@nestjs/swagger';
-import { IsEmail, isEmail, IsNumber, IsOptional, isString, IsString, IsStrongPassword, IsUUID, } from 'class-validator';
-import { User } from 'src/entity/user.entity';
-
+import { ApiExpectationFailedResponse, ApiProperty } from "@nestjs/swagger";
+import {
+  IsEmail,
+  isEmail,
+  IsNumber,
+  IsOptional,
+  isString,
+  IsString,
+  IsStrongPassword,
+  IsUUID,
+} from "class-validator";
+import { User } from "src/entity/user.entity";
 
 export class UserDTO implements Readonly<UserDTO> {
   @IsUUID()
   @IsOptional()
   id: string;
 
-  @ApiProperty({required: true})
+  @ApiProperty({ required: true })
   @IsEmail()
   email: string;
 
-  @ApiProperty({required: true})
+  @ApiProperty({ required: true })
   @IsStrongPassword()
-  password: string
-
+  password: string;
 
   @ApiProperty({ required: true })
   @IsString()
   nickname: string;
 
-
   public static from(dto: Partial<UserDTO>) {
     const it = new UserDTO();
-    const result = Object.assign({}, it, dto)
+    const result = Object.assign({}, it, dto);
     return result;
   }
 
@@ -37,7 +42,6 @@ export class UserDTO implements Readonly<UserDTO> {
   }
 
   public toEntity() {
-
     const it = new User();
     it.id = this.id;
     it.nickname = this.nickname;

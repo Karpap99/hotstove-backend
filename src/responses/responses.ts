@@ -1,24 +1,21 @@
-import { User } from "src/entity/user.entity"
+import { User } from "src/entity/user.entity";
 
 interface baseResponse {
-    status: string,
-    code: number,
-    message: string
+  status: string;
+  code: number;
+  message: string;
 }
 
-
 interface AuthResponseSuccess extends baseResponse {
-    data: {
-        token: string;
-    }
+  data: {
+    token: string;
+  };
 }
 
 interface AuthResponseError extends baseResponse {
-    data: {
-        errors: string;
-    }
+  data: {
+    errors: string;
+  };
 }
 
-
-
-export {AuthResponseError, AuthResponseSuccess}
+export { AuthResponseError, AuthResponseSuccess };

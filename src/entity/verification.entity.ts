@@ -1,18 +1,22 @@
-import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, OneToOne } from "typeorm"
-import { BaseEntity } from "./base.entity"
-import { User } from "./user.entity"
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  JoinColumn,
+  OneToOne,
+} from "typeorm";
+import { BaseEntity } from "./base.entity";
+import { User } from "./user.entity";
 
 @Entity()
 export class Verification extends BaseEntity {
-    @Column()
-    email: string
+  @Column()
+  email: string;
 
-    @JoinColumn()
-    @OneToOne(()=>User, user => user.id)
-    user: User
+  @JoinColumn()
+  @OneToOne(() => User, (user) => user.id)
+  user: User;
 
-    @Column()
-    verified: boolean
-
-
+  @Column()
+  verified: boolean;
 }

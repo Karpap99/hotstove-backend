@@ -1,8 +1,8 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsUUID } from 'class-validator';
-import { Post } from 'src/entity/post.entity';
-import { User } from 'src/entity/user.entity';
-import { Likes } from 'src/entity/likes.entity';
+import { ApiProperty } from "@nestjs/swagger";
+import { IsOptional, IsUUID } from "class-validator";
+import { Post } from "src/entity/post.entity";
+import { User } from "src/entity/user.entity";
+import { Likes } from "src/entity/likes.entity";
 
 export class CreateDTO implements Readonly<CreateDTO> {
   @IsUUID()
@@ -10,11 +10,9 @@ export class CreateDTO implements Readonly<CreateDTO> {
   id: string;
   @ApiProperty({ required: false, type: () => Post })
   post: Post;
-  
+
   @ApiProperty({ required: false, type: () => User })
   likeBy: User;
-
- 
 
   public static from(dto: Partial<CreateDTO>): CreateDTO {
     const it = new CreateDTO();
@@ -37,5 +35,4 @@ export class CreateDTO implements Readonly<CreateDTO> {
     it.likeBy = this.likeBy;
     return it;
   }
-
 }

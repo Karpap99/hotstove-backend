@@ -1,9 +1,9 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
-import { SubmessageLikes } from 'src/entity/submessageLike.entity';
-import { User } from 'src/entity/user.entity';
-import { SubMessage } from 'src/entity/submessage.entity';
+import { Injectable, BadRequestException } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { In, Repository } from "typeorm";
+import { SubmessageLikes } from "src/entity/submessageLike.entity";
+import { User } from "src/entity/user.entity";
+import { SubMessage } from "src/entity/submessage.entity";
 
 @Injectable()
 export class SubmessageLikeService {
@@ -20,10 +20,12 @@ export class SubmessageLikeService {
 
   public async setLike(userId: string, submessageId: string) {
     const user = await this.userRepo.findOne({ where: { id: userId } });
-    if (!user) throw new BadRequestException('user_error');
+    if (!user) throw new BadRequestException("user_error");
 
-    const submessage = await this.submessageRepo.findOne({ where: { id: submessageId } });
-    if (!submessage) throw new BadRequestException('submessage_error');
+    const submessage = await this.submessageRepo.findOne({
+      where: { id: submessageId },
+    });
+    if (!submessage) throw new BadRequestException("submessage_error");
 
     const existingLike = await this.repo.findOne({
       where: {
@@ -39,38 +41,40 @@ export class SubmessageLikeService {
       message: submessage,
     });
 
-    await this.submessageRepo.increment({ id: submessage.id }, 'likesCount', 1);
+    await this.submessageRepo.increment({ id: submessage.id }, "likesCount", 1);
     return await this.repo.save(newLike);
   }
 
   public async deleteLike(userId: string, submessageId: string) {
     const user = await this.userRepo.findOne({ where: { id: userId } });
-    if (!user) throw new BadRequestException('user_error');
+    if (!user) throw new BadRequestException("user_error");
 
-    const submessage = await this.submessageRepo.findOne({ where: { id: submessageId } });
-    if (!submessage) throw new BadRequestException('submessage_error');
+    const submessage = await this.submessageRepo.findOne({
+      where: { id: submessageId },
+    });
+    if (!submessage) throw new BadRequestException("submessage_error");
 
     const existingLike = await this.repo.findOne({
       where: {
         user: { id: userId },
         message: { id: submessageId },
       },
-      relations: ['user', 'message'],
+      relations: ["user", "message"],
     });
 
     if (!existingLike) return;
 
-    await this.submessageRepo.decrement({ id: submessage.id }, 'likesCount', 1);
+    await this.submessageRepo.decrement({ id: submessage.id }, "likesCount", 1);
     return await this.repo.delete(existingLike.id);
   }
 
   async findLikesForMessages(userId: string, messageIds: string[]) {
-      return this.repo.find({
-          where: {
-              user: { id: userId },
-              message: { id: In(messageIds) },
-          },
-          relations: ['message'],
-      });
-    }
+    return this.repo.find({
+      where: {
+        user: { id: userId },
+        message: { id: In(messageIds) },
+      },
+      relations: ["message"],
+    });
+  }
 }

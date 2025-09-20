@@ -1,45 +1,57 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, ManyToOne, OneToMany, Like} from "typeorm"
-import { BaseEntity } from "./base.entity"
-import { User } from "./user.entity"
-import { Likes } from "./likes.entity"
-import { Message } from "./message.entity"
-import { PostTag } from "./postTag.entity"
-import { Marking } from "./marking.entity"
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToOne,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  Like,
+} from "typeorm";
+import { BaseEntity } from "./base.entity";
+import { User } from "./user.entity";
+import { Likes } from "./likes.entity";
+import { Message } from "./message.entity";
+import { PostTag } from "./postTag.entity";
+import { Marking } from "./marking.entity";
 
 @Entity()
-export class Post extends BaseEntity{
-    @Column()
-    title: string
+export class Post extends BaseEntity {
+  @Column()
+  title: string;
 
-    @Column()
-    description: string
+  @Column()
+  description: string;
 
-    @Column({default: ''})
-    title_picture: string
-    
-    @JoinColumn()
-    @ManyToOne(()=>User, user=>user.id)
-    creator: User
+  @Column({ default: "" })
+  title_picture: string;
 
-    @OneToMany(()=>PostTag, tags=>tags.post, {cascade: true, eager: true})
-    tags:PostTag[]
+  @JoinColumn()
+  @ManyToOne(() => User, (user) => user.id)
+  creator: User;
 
-    @Column({default: 0})
-    views: number
+  @OneToMany(() => PostTag, (tags) => tags.post, { cascade: true, eager: true })
+  tags: PostTag[];
 
-    @Column({default: 0})
-    likeCount: number
+  @Column({ default: 0 })
+  views: number;
 
-    @Column({default: 0})
-    messagesCount: number
+  @Column({ default: 0 })
+  likeCount: number;
 
-    @OneToMany(() => Likes, likes => likes.post,)
-    likes: Likes[]
+  @Column({ default: 0 })
+  messagesCount: number;
 
-    @OneToMany(()=>Message, msg => msg.post)
-    messages: Message[]
-    
-    @OneToOne(()=>Marking, mrk=> mrk.post,{ cascade: true, eager: true, nullable: true })
-    marking: Marking
+  @OneToMany(() => Likes, (likes) => likes.post)
+  likes: Likes[];
 
+  @OneToMany(() => Message, (msg) => msg.post)
+  messages: Message[];
+
+  @OneToOne(() => Marking, (mrk) => mrk.post, {
+    cascade: true,
+    eager: true,
+    nullable: true,
+  })
+  marking: Marking;
 }

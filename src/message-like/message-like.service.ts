@@ -1,9 +1,9 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Message } from 'src/entity/message.entity';
-import { MessageLike } from 'src/entity/messageLike.entity';
-import { User } from 'src/entity/user.entity';
-import { In, Repository } from 'typeorm';
+import { Injectable, BadRequestException } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Message } from "src/entity/message.entity";
+import { MessageLike } from "src/entity/messageLike.entity";
+import { User } from "src/entity/user.entity";
+import { In, Repository } from "typeorm";
 
 @Injectable()
 export class MessageLikeService {
@@ -18,17 +18,20 @@ export class MessageLikeService {
     private readonly messageRepo: Repository<Message>,
   ) {}
 
-
-  public async findLike(userId: string, messageId: string){
-    return !!(await this.repo.find({where:{user:{id: userId}, message: {id: messageId}}}))
+  public async findLike(userId: string, messageId: string) {
+    return !!(await this.repo.find({
+      where: { user: { id: userId }, message: { id: messageId } },
+    }));
   }
 
   public async setLike(userId: string, messageId: string) {
     const user = await this.userRepo.findOne({ where: { id: userId } });
-    if (!user) throw new BadRequestException('user_error');
+    if (!user) throw new BadRequestException("user_error");
 
-    const message = await this.messageRepo.findOne({ where: { id: messageId } });
-    if (!message) throw new BadRequestException('message_error');
+    const message = await this.messageRepo.findOne({
+      where: { id: messageId },
+    });
+    if (!message) throw new BadRequestException("message_error");
 
     const existingLike = await this.repo.findOne({
       where: {
@@ -44,39 +47,40 @@ export class MessageLikeService {
       message: message,
     });
 
-    await this.messageRepo.increment({ id: message.id }, 'likesCount', 1);
+    await this.messageRepo.increment({ id: message.id }, "likesCount", 1);
     return await this.repo.save(newLike);
   }
 
-
   public async deleteLike(userId: string, messageId: string) {
     const user = await this.userRepo.findOne({ where: { id: userId } });
-    if (!user) throw new BadRequestException('user_error');
+    if (!user) throw new BadRequestException("user_error");
 
-    const message = await this.messageRepo.findOne({ where: { id: messageId } });
-    if (!message) throw new BadRequestException('message_error');
+    const message = await this.messageRepo.findOne({
+      where: { id: messageId },
+    });
+    if (!message) throw new BadRequestException("message_error");
 
     const existingLike = await this.repo.findOne({
       where: {
         user: { id: userId },
         message: { id: messageId },
       },
-      relations: ['user', 'message'],
+      relations: ["user", "message"],
     });
 
     if (!existingLike) return;
 
-    await this.messageRepo.decrement({ id: message.id }, 'likesCount', 1);
+    await this.messageRepo.decrement({ id: message.id }, "likesCount", 1);
     return await this.repo.delete(existingLike.id);
   }
 
   async findLikesForMessages(userId: string, messageIds: string[]) {
     return this.repo.find({
-        where: {
-            user: { id: userId },
-            message: { id: In(messageIds) },
-        },
-        relations: ['message'],
+      where: {
+        user: { id: userId },
+        message: { id: In(messageIds) },
+      },
+      relations: ["message"],
     });
-}
+  }
 }
