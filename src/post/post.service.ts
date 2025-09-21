@@ -3,6 +3,7 @@ import {
   forwardRef,
   Inject,
   Injectable,
+  Logger,
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Post } from "src/entity/post.entity";
@@ -35,7 +36,7 @@ export type post_short = {
 
 @Injectable()
 export class PostService {
-  UpdatePost(uuid: any) {
+  UpdatePost() {
     throw new Error("Method not implemented.");
   }
   constructor(
@@ -299,19 +300,17 @@ export class PostService {
   }
 
   public async getTitles(
-    userId: string,
     page: number = 1,
     limit: number = 10,
     query: string = "",
   ) {
-    const skip = (page - 1) * limit;
     const [publications, total] = await this.repo.findAndCount({
       where: { title: ILike(`%${query}%`) },
       take: limit,
     });
 
     const formated = await Promise.all(
-      publications.map(async (publication) => {
+      publications.map((publication) => {
         return {
           title: publication.title,
         };
@@ -379,13 +378,16 @@ export class PostService {
   public async UpdateView(postId: string) {
     const post = await this.repo.findOneBy({ id: postId });
     if (!post) return BadRequestException;
-    return await this.repo.save({ ...post, ...{ views: post["views"] + 1 } });
+    return await this.repo.save({ ...post, ...{ views: post.views + 1 } });
   }
 
   public async UpdateLike(postId: string) {
-    const post = this.repo.findOneBy({ id: postId });
+    const post = await this.repo.findOneBy({ id: postId });
     if (!post) return BadRequestException;
-    return await this.repo.save({ ...post, ...{ views: post["likes"] + 1 } });
+    return await this.repo.save({
+      ...post,
+      ...{ likesCount: post.likeCount + 1 },
+    });
   }
 
   public async CreatePost(
@@ -399,8 +401,9 @@ export class PostService {
 
     let marking: Markingdt;
     try {
-      marking = JSON.parse(dto.marking);
+      marking = JSON.parse(dto.marking) as Markingdt;
     } catch (e) {
+      Logger.log(e);
       throw new BadRequestException("Invalid marking JSON");
     }
 
@@ -419,7 +422,7 @@ export class PostService {
     }
     for (const { file, url } of uploadResults) {
       if (file.originalname !== "title_picture") {
-        marking.children = await this.SearchAndAsignImage(marking.children, {
+        marking.children = this.SearchAndAsignImage(marking.children, {
           name: file.originalname,
           uri: url,
         });
@@ -437,7 +440,7 @@ export class PostService {
     });
 
     if (tags && tags.trim()) {
-      await this.tagsSrvc.addTags(publication.id, tags);
+      this.tagsSrvc.addTags(publication.id, tags);
     }
 
     return { publication, mrk };
@@ -455,12 +458,11 @@ export class PostService {
     return await this.repo.delete({ id: post.id });
   }
 
-  async SearchAndAsignImage(
+  SearchAndAsignImage(
     marking: element[],
     file: { name: string; uri: string },
-  ): Promise<element[]> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const deepCopy = JSON.parse(JSON.stringify(marking));
+  ): element[] {
+    const deepCopy = structuredClone(marking);
     const assign = (elements: element[]) => {
       return elements.map((el) => {
         const newEl = { ...el };
@@ -478,5 +480,4 @@ export class PostService {
     };
     return assign(deepCopy);
   }
-
 }

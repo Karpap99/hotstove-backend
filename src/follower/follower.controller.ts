@@ -1,3 +1,4 @@
+import { Request } from "express";
 import {
   Body,
   Controller,
@@ -18,18 +19,18 @@ export class FollowerController {
   @UseGuards(AuthGuard("jwt"))
   @Post("")
   async OnFollow(@Req() req: Request, @Body("followTO") followTO: string) {
-    return await this.serv.FollowOn(req["user"].uuid, followTO);
+    return await this.serv.FollowOn(req.user!.uuid, followTO);
   }
 
   @UseGuards(AuthGuard("jwt"))
   @Delete("")
   async UnFollow(@Req() req: Request, @Query("followTO") followTO: string) {
-    return await this.serv.UnFollow(req["user"].uuid, followTO);
+    return await this.serv.UnFollow(req.user!.uuid, followTO);
   }
 
   @UseGuards(AuthGuard("jwt"))
   @Get("FollowedByUser")
   async Followed(@Req() req: Request) {
-    return await this.serv.FollowedByUser(req["user"].uuid);
+    return await this.serv.FollowedByUser(req.user!.uuid);
   }
 }

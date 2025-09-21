@@ -1,15 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
-import {
-  IsJSON,
-  IsNumber,
-  IsOptional,
-  IsString,
-  IsUUID,
-} from "class-validator";
+import { IsOptional, IsUUID } from "class-validator";
 import { Post } from "src/entity/post.entity";
 import { User } from "src/entity/user.entity";
-import { Markingdt } from "./types";
-import { emit } from "process";
 import { Likes } from "src/entity/likes.entity";
 
 export class CreateDTO implements Readonly<CreateDTO> {
@@ -68,7 +60,7 @@ export class CreateDTO implements Readonly<CreateDTO> {
     };
   }
 
-  public toEntity(dto: Partial<CreateDTO>) {
+  public toEntity() {
     const it = new Post();
     return it;
   }

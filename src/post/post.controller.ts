@@ -1,3 +1,4 @@
+import { Request } from "express";
 import {
   Body,
   Controller,
@@ -27,7 +28,7 @@ export class PostController {
     @Query("limit") limit: number = 10,
     @Query("query") query: string,
   ) {
-    return await this.serv.getAll(req["user"].uuid, page, limit, query);
+    return await this.serv.getAll(req.user!.uuid, page, limit, query);
   }
 
   @Get("test")
@@ -38,7 +39,7 @@ export class PostController {
   @UseGuards(AuthGuard("jwt"))
   @Get("/byId")
   public async getById(@Req() req: Request, @Query("postId") postId: string) {
-    return await this.serv.getPostsById(req["user"].uuid, postId);
+    return await this.serv.getPostsById(req.user!.uuid, postId);
   }
 
   @UseGuards(AuthGuard("jwt"))
@@ -47,7 +48,7 @@ export class PostController {
     @Req() req: Request,
     @Query("postId") postId: string,
   ) {
-    return await this.serv.getPostsByIdWithMarking(req["user"].uuid, postId);
+    return await this.serv.getPostsByIdWithMarking(req.user!.uuid, postId);
   }
 
   @UseGuards(AuthGuard("jwt"))
@@ -56,21 +57,20 @@ export class PostController {
     @Req() req: Request,
     @Query("UserId") UserId: string,
     @Query("page") page: number = 1,
-    @Query("limit") limit: number = 10,
   ) {
-    return await this.serv.getPostsByUserId(req["user"].uuid, UserId, page);
+    return await this.serv.getPostsByUserId(req.user!.uuid, UserId, page);
   }
 
   @UseGuards(AuthGuard("jwt"))
   @Get("/ByUserAndFollowed")
   public async ByUserAndFollowed(@Req() req: Request) {
-    return await this.serv.ByUserAndFollowed(req["user"].uuid);
+    return await this.serv.ByUserAndFollowed(req.user!.uuid);
   }
 
   @UseGuards(AuthGuard("jwt"))
   @Get("/GetLikedPosts")
   public async getLikedPosts(@Req() req: Request) {
-    return await this.serv.getLikedPosts(req["user"].uuid);
+    return await this.serv.getLikedPosts(req.user!.uuid);
   }
 
   @UseGuards(AuthGuard("jwt"))
@@ -82,11 +82,11 @@ export class PostController {
     @Body() data: { post: CreateDTO; tags: string },
   ) {
     return await this.serv.CreatePost(
-      req["user"].uuid,
+      req.user!.uuid,
       CreateDTO.from({
-        title: data["title"],
-        description: data["description"],
-        marking: data["marking"],
+        title: data.post.title,
+        description: data.post.description,
+        marking: data.post.marking,
       }),
       files,
       data.tags,
@@ -96,17 +96,13 @@ export class PostController {
   @UseGuards(AuthGuard("jwt"))
   @Put()
   @UseInterceptors(FilesInterceptor("files"))
-  public update(
-    @UploadedFiles()
-    files: Express.Multer.File[],
-    @Req() req: Request,
-  ) {
-    return this.serv.UpdatePost(req["user"].uuid);
+  public update() {
+    return this.serv.UpdatePost();
   }
 
   @UseGuards(AuthGuard("jwt"))
   @Delete()
   public async delete(@Req() req: Request, @Query("postId") postId: string) {
-    return await this.serv.DeletePost(req["user"].uuid, postId);
+    return await this.serv.DeletePost(req.user!.uuid, postId);
   }
 }

@@ -1,13 +1,4 @@
-import { ApiExpectationFailedResponse, ApiProperty } from "@nestjs/swagger";
-import {
-  isEmail,
-  IsNumber,
-  IsOptional,
-  isString,
-  IsString,
-  IsStrongPassword,
-  IsUUID,
-} from "class-validator";
+import { ApiProperty } from "@nestjs/swagger";
 import { User } from "src/entity/user.entity";
 
 export class ResponseDTO implements Readonly<ResponseDTO> {

@@ -11,6 +11,7 @@ import { UploaderService } from "src/uploader/uploader.service";
 import { User_Data } from "src/entity/user_data.entity";
 import { UpdateDTO } from "./dto/update.dto";
 import { BIG_AVATAR } from "src/constants";
+
 @Injectable()
 export class UserDataService {
   constructor(

@@ -1,10 +1,7 @@
-import { ApiExpectationFailedResponse, ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from "@nestjs/swagger";
 import {
   IsEmail,
-  isEmail,
-  IsNumber,
   IsOptional,
-  isString,
   IsString,
   IsStrongPassword,
   IsUUID,

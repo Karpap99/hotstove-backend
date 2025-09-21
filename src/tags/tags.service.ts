@@ -1,6 +1,5 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { skip } from "node:test";
 import { PostTag } from "src/entity/postTag.entity";
 import { Tag } from "src/entity/tag.entity";
 import { Repository } from "typeorm";
@@ -13,17 +12,19 @@ export class TagsService {
   ) {}
 
   async addTags(postId: string, tags: string) {
-    const Tags = JSON.parse(tags);
-    Tags.forEach(async (tag) => {
-      const tg = await this.Tags.find({ where: { id: tag["id"] } });
+    const Tags = JSON.parse(tags) as { id: string }[];
+
+    for (const tag of Tags) {
+      const tg = await this.Tags.find({ where: { id: tag.id } });
       if (tg) {
-        const payload = await this.repo.create({
+        const payload = this.repo.create({
           post: { id: postId },
-          tag: { id: tag["id"] },
+          tag: { id: tag.id },
         });
         await this.repo.save(payload);
       }
-    });
+    }
+
     return;
   }
 }

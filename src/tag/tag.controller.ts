@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  Param,
   Post,
   Put,
   Query,
@@ -25,12 +24,12 @@ export class TagController {
   }
 
   @Put()
-  async update() {
-    return await "f";
+  update() {
+    return "f";
   }
 
   @Delete()
-  async delete() {
-    return await "";
+  delete() {
+    return "";
   }
 }

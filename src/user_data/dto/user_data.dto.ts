@@ -1,14 +1,5 @@
-import { ApiExpectationFailedResponse, ApiProperty } from "@nestjs/swagger";
-import {
-  IsEmail,
-  isEmail,
-  IsNumber,
-  IsOptional,
-  isString,
-  IsString,
-  IsStrongPassword,
-  IsUUID,
-} from "class-validator";
+import { ApiProperty } from "@nestjs/swagger";
+import { IsNumber, IsOptional, IsString, IsUUID } from "class-validator";
 import { User } from "src/entity/user.entity";
 import { User_Data } from "src/entity/user_data.entity";
 

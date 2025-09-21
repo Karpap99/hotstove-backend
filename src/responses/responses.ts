@@ -1,5 +1,3 @@
-import { User } from "src/entity/user.entity";
-
 interface baseResponse {
   status: string;
   code: number;

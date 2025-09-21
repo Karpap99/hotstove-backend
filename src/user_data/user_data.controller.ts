@@ -1,3 +1,4 @@
+import { Request } from "express";
 import {
   Body,
   Controller,
@@ -22,7 +23,7 @@ export class UserDataController {
   @UseGuards(AuthGuard("jwt"))
   @Get()
   public async getOne(@Req() req: Request, @Body() id: string) {
-    return await this.serv.getUserDataById(id ? id : req["user"].uuid);
+    return await this.serv.getUserDataById(id ? id : req.user!.uuid);
   }
 
   @UseGuards(AuthGuard("jwt"))
@@ -45,6 +46,6 @@ export class UserDataController {
     @Req() req: Request,
     @Body() update: UpdateDTO,
   ) {
-    return await this.serv.UpdateUser(req["user"].uuid, update, file);
+    return await this.serv.UpdateUser(req.user!.uuid, update, file);
   }
 }

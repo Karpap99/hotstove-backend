@@ -1,4 +1,4 @@
-import { Controller, Get, Req, UseGuards } from "@nestjs/common";
+import { Controller, Get, UseGuards } from "@nestjs/common";
 import { MailService } from "./mail.service";
 import { AuthGuard } from "@nestjs/passport";
 
@@ -8,7 +8,7 @@ export class MailController {
 
   @UseGuards(AuthGuard("jwt"))
   @Get()
-  public async getAll(@Req() req: Request) {
-    return await this.mailService.SendVerification(req["user"].email);
+  public async getAll() {
+    return await this.mailService.SendVerification();
   }
 }

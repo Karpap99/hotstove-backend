@@ -18,27 +18,6 @@ import { UploaderService } from "./uploader.service";
 export class UploaderController {
   constructor(private readonly uploaderService: UploaderService) {}
 
-  @Post("/file")
-  @UseInterceptors(FileInterceptor("file"))
-  uploadFile(
-    @UploadedFile(
-      new ParseFilePipe({
-        validators: [
-          new FileTypeValidator({ fileType: ".(png|jpeg|jpg)" }),
-          new MaxFileSizeValidator({
-            maxSize: 10000000, // 10MB
-            message: "File is too large. Max file size is 10MB",
-          }),
-        ],
-        fileIsRequired: true,
-      }),
-    )
-    file: Express.Multer.File,
-    @Body("isPublic") isPublic: string,
-  ) {
-    return "";
-  }
-
   @Post("/pfp")
   @UseInterceptors(FileInterceptor("image"))
   async uploadpfp(

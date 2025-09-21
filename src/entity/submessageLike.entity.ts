@@ -1,5 +1,4 @@
 import { Entity, JoinColumn, ManyToOne, Unique } from "typeorm";
-import { Message } from "./message.entity";
 import { User } from "./user.entity";
 import { BaseEntity } from "./base.entity";
 import { SubMessage } from "./submessage.entity";

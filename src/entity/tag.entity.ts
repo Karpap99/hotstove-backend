@@ -1,10 +1,4 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  JoinColumn,
-  OneToMany,
-} from "typeorm";
+import { Entity, Column, OneToMany } from "typeorm";
 import { BaseEntity } from "./base.entity";
 import { PostTag } from "./postTag.entity";
 import { TagTranslation } from "./tagTranslation.entity";

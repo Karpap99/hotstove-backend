@@ -1,3 +1,4 @@
+import { Request } from "express";
 import {
   Body,
   Controller,
@@ -22,7 +23,7 @@ export class SubmessageController {
     @Req() req: Request,
     @Body("data") data: { messageId: string; text: string; receiverId: string },
   ) {
-    return await this.serv.sendSubMessage(req["user"].uuid, data);
+    return await this.serv.sendSubMessage(req.user!.uuid, data);
   }
 
   @UseGuards(AuthGuard("jwt"))
@@ -31,7 +32,7 @@ export class SubmessageController {
     @Req() req: Request,
     @Query("messageId") messageId: string,
   ) {
-    return await this.serv.getAllByMessage(req["user"].uuid, messageId);
+    return await this.serv.getAllByMessage(req.user!.uuid, messageId);
   }
 
   @UseGuards(AuthGuard("jwt"))
@@ -40,7 +41,7 @@ export class SubmessageController {
     @Req() req: Request,
     @Query("messageId") messageId: string,
   ) {
-    return await this.serv.Delete(req["user"].uuid, messageId);
+    return await this.serv.Delete(req.user!.uuid, messageId);
   }
 
   @UseGuards(AuthGuard("jwt"))
@@ -49,6 +50,6 @@ export class SubmessageController {
     @Req() req: Request,
     @Body("data") data: { messageId: string; text: string },
   ) {
-    return await this.serv.UpdateMessage(req["user"].uuid, data);
+    return await this.serv.UpdateMessage(req.user!.uuid, data);
   }
 }

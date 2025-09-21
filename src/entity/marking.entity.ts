@@ -1,13 +1,5 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  OneToOne,
-  JoinColumn,
-  ManyToOne,
-} from "typeorm";
+import { Entity, Column, OneToOne, JoinColumn } from "typeorm";
 import { BaseEntity } from "./base.entity";
-import { User } from "./user.entity";
 import { Post } from "./post.entity";
 import { Markingdt } from "src/post/dto/types";
 
