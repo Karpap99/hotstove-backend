@@ -12,7 +12,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from "@nestjs/common";
-import { UserDataService } from "./user_data.service";
+import { UserDataService } from "./userData.service";
 import { AuthGuard } from "@nestjs/passport";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { UpdateDTO } from "./dto/update.dto";

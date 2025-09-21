@@ -8,14 +8,14 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "src/entity/user.entity";
 import { Repository } from "typeorm";
 import { UploaderService } from "src/uploader/uploader.service";
-import { User_Data } from "src/entity/user_data.entity";
+import { UserData } from "src/entity/userData.entity";
 import { UpdateDTO } from "./dto/update.dto";
 import { BIG_AVATAR } from "src/constants";
 
 @Injectable()
 export class UserDataService {
   constructor(
-    @InjectRepository(User_Data) private readonly data: Repository<User_Data>,
+    @InjectRepository(UserData) private readonly data: Repository<UserData>,
     @InjectRepository(User) private readonly users: Repository<User>,
     @Inject(forwardRef(() => UploaderService))
     private uploader: UploaderService,
@@ -45,7 +45,7 @@ export class UserDataService {
     });
 
     if (!userData) {
-      userData = new User_Data();
+      userData = new UserData();
       userData.user = u;
     }
 

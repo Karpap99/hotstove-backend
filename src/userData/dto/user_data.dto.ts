@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNumber, IsOptional, IsString, IsUUID } from "class-validator";
 import { User } from "src/entity/user.entity";
-import { User_Data } from "src/entity/user_data.entity";
+import { User_Data } from "src/entity/userData.entity";
 
 export class UserDataDTO implements Readonly<UserDataDTO> {
   @IsUUID()

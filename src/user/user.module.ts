@@ -6,7 +6,7 @@ import { UserController } from "./user.controller";
 import { UploaderModule } from "src/uploader/uploader.module";
 import { PostModule } from "src/post/post.module";
 import { FollowerModule } from "src/follower/follower.module";
-import { UserDataModule } from "src/user_data/user_data.module";
+import { UserDataModule } from "src/userData/userData.module";
 
 @Module({
   imports: [

@@ -12,7 +12,7 @@ import { PostModule } from './post/post.module';
 import { MailModule } from './mail/mail.module';
 import { FollowerModule } from './follower/follower.module';
 import { LikeModule } from './like/like.module';
-import { UserDataModule } from './user_data/user_data.module';
+import { UserDataModule } from './userData/userData.module';
 import { MessageModule } from './message/message.module';
 import { TagModule } from './tag/tag.module';
 import { MessageLikeModule } from './message-like/message-like.module';

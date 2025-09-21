@@ -2,7 +2,7 @@ import { Entity, Column, OneToMany, OneToOne } from "typeorm";
 import { BaseEntity } from "./base.entity";
 import { Post } from "./post.entity";
 import { Likes } from "./likes.entity";
-import { User_Data } from "./user_data.entity";
+import { UserData } from "./userData.entity";
 import { Follower } from "./follower.entity";
 import { Message } from "./message.entity";
 import { SubMessage } from "./submessage.entity";
@@ -21,8 +21,8 @@ export class User extends BaseEntity {
   @Column({ default: 0 })
   followersCount: number;
 
-  @OneToOne(() => User_Data, (user_data) => user_data.user, { cascade: true })
-  user_data: User_Data;
+  @OneToOne(() => UserData, (userdata) => userdata.user, { cascade: true })
+  user_data: UserData;
 
   @OneToMany(() => Post, (post) => post.creator)
   posts: Post[];

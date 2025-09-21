@@ -4,7 +4,7 @@ import { User } from "./user.entity";
 
 @Entity()
 @Unique(["user"])
-export class User_Data extends BaseEntity {
+export class UserData extends BaseEntity {
   @OneToOne(() => User, (user) => user.id, { onDelete: "CASCADE" })
   @JoinColumn()
   user: User;
