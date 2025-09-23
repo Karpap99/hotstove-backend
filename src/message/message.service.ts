@@ -17,14 +17,12 @@ export class MessageService {
   ) {}
 
   async sendMessage(uuid: string, data: { postId: string; text: string }) {
-    const user = await this.users.findOne({ where: { id: uuid } });
-    if (!user) throw new BadRequestException();
     const post = await this.posts.findOne({ where: { id: data.postId } });
     if (!post) throw new BadRequestException();
 
     const message = this.repo.create({
       post,
-      user,
+      user: { id: uuid },
       text: data.text,
     });
     const saved = await this.repo.save(message);
@@ -48,7 +46,7 @@ export class MessageService {
     };
   }
   async getAllByPost(uuid: string, postId: string) {
-    const post = await this.posts.findOne({ where: { id: postId } });
+    const post = await this.posts.exists({ where: { id: postId } });
     if (!post) throw new BadRequestException();
     const messages = await this.repo.find({
       where: { post: { id: postId } },
@@ -82,14 +80,14 @@ export class MessageService {
   }
 
   async UpdateMessage(uuid: string, data: { messageId: string; text: string }) {
-    const user = await this.users.findOne({ where: { id: uuid } });
-    if (!user) throw new BadRequestException();
-    const message = await this.repo.findOne({
+    const message = await this.repo.exists({
       where: { id: data.messageId, user: { id: uuid } },
     });
     if (!message) throw new BadRequestException("");
-    message.text = data.text;
-    return await this.repo.save(message);
+    return await this.repo.update(
+      { user: { id: uuid }, id: data.messageId },
+      { text: data.text },
+    );
   }
 
   async Delete(uuid: string, messageId: string) {

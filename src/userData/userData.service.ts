@@ -50,18 +50,17 @@ export class UserDataService {
     }
 
     if (file) {
-      const isPublic = update.isPublic === "true";
-      const pfp = await this.uploader.uploadProfilePhoto({ file, isPublic });
+      const pfp = await this.uploader.uploadProfilePhoto({
+        file,
+        isPublic: true,
+      });
       userData.profile_picture = pfp.url;
     }
 
     if (update.age) {
       userData.age = new Date(update.age);
     }
-
-    if (update.description !== undefined) {
-      userData.description = update.description;
-    }
+    userData.description = update.description;
 
     const result = await this.data.save(userData);
     result.profile_picture = BIG_AVATAR.replace(

@@ -12,10 +12,10 @@ export class UpdateDTO implements Readonly<UpdateDTO> {
   @ApiProperty({ required: false })
   age: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, default: "" })
   description: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, default: true })
   isPublic: string;
 
   public static from(dto: Partial<UpdateDTO>) {

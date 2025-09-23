@@ -5,6 +5,7 @@ import { SubMessage } from "src/entity/submessage.entity";
 import { Message } from "src/entity/message.entity";
 import { User } from "src/entity/user.entity";
 import { SubmessageLikeService } from "src/submessage-like/submessage-like.service";
+import { SMALL_AVATAR } from "src/constants";
 
 @Injectable()
 export class SubMessageService {
@@ -24,23 +25,19 @@ export class SubMessageService {
     uuid: string,
     data: { messageId: string; text: string; receiverId: string },
   ) {
-    const user = await this.users.findOne({ where: { id: uuid } });
-    if (!user) throw new BadRequestException("User not found");
-
-    const message = await this.messages.findOne({
+    const message = await this.messages.exists({
       where: { id: data.messageId },
     });
     if (!message) throw new BadRequestException("Message not found");
-
-    const receiver = await this.users.findOne({
+    const receiver = await this.users.exists({
       where: { id: data.receiverId },
     });
     if (!receiver) throw new BadRequestException("Receiver not found");
 
     const subMessage = this.repo.create({
-      message,
-      user,
-      receiver,
+      message: { id: data.messageId },
+      user: { id: uuid },
+      receiver: { id: data.receiverId },
       text: data.text,
     });
 
@@ -52,7 +49,11 @@ export class SubMessageService {
     });
 
     if (!newSubMsg) return saved;
-    await this.messages.increment({ id: message.id }, "submessagesCount", 1);
+    await this.messages.increment(
+      { id: data.messageId },
+      "submessagesCount",
+      1,
+    );
     return {
       ...newSubMsg,
       user: {
@@ -68,7 +69,7 @@ export class SubMessageService {
   }
 
   async getAllByMessage(uuid: string, messageId: string) {
-    const message = await this.messages.findOne({ where: { id: messageId } });
+    const message = await this.messages.exists({ where: { id: messageId } });
     if (!message) throw new BadRequestException("Message not found");
 
     const submessages = await this.repo.find({
@@ -84,14 +85,15 @@ export class SubMessageService {
     );
     const likedMessageIds = new Set(userLikes.map((like) => like.message.id));
 
-    const image_scheme = `${process.env.MINIO_ENDPOINT + "/" + process.env.MINIO_BUCKET_NAME}/profile_pictures/32x32_`;
-
     return submessages.map((sub) => ({
       ...sub,
       user: {
         id: sub.user.id,
         nickname: sub.user.nickname,
-        profile_picture: `${image_scheme + sub.user.user_data.profile_picture}.jpeg`,
+        profile_picture: SMALL_AVATAR.replace(
+          "default",
+          sub.user.user_data.profile_picture,
+        ),
       },
       receiver: {
         id: sub.receiver.id,
@@ -102,30 +104,20 @@ export class SubMessageService {
   }
 
   async Delete(uuid: string, messageId: string) {
-    const message = await this.repo.findOne({
+    const message = await this.repo.exists({
       where: { id: messageId, user: { id: uuid } },
-      relations: ["message"],
     });
     if (!message) throw new BadRequestException();
     await this.repo.delete({ id: messageId });
-    await this.messages.decrement(
-      { id: message.message.id },
-      "messagesCount",
-      1,
-    );
+    await this.messages.decrement({ id: messageId }, "messagesCount", 1);
     return { success: true };
   }
 
   async UpdateMessage(uuid: string, data: { messageId: string; text: string }) {
-    const user = await this.users.findOne({ where: { id: uuid } });
-    if (!user) throw new BadRequestException();
-
-    const message = await this.repo.findOne({
+    const message = await this.repo.exists({
       where: { id: data.messageId, user: { id: uuid } },
     });
     if (!message) throw new BadRequestException("");
-    message.text = data.text;
-
-    return await this.repo.save(message);
+    return await this.repo.update({ id: data.messageId }, { text: data.text });
   }
 }

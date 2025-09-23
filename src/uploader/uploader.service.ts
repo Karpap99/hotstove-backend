@@ -56,7 +56,7 @@ export class UploaderService {
       });
       await this.client.send(command);
       return {
-        url: `${this.endpoint}/${this.bucketName}/post_pictures/${key}`,
+        url: `${this.endpoint}/${this.bucketName}/${key}`,
       };
     } catch (error) {
       throw new InternalServerErrorException(error);

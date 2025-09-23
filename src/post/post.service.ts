@@ -4,6 +4,7 @@ import {
   Inject,
   Injectable,
   Logger,
+  UnauthorizedException,
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Post } from "src/entity/post.entity";
@@ -79,6 +80,29 @@ export class PostService {
     return formated;
   }
 
+  async FormatPublication(publication: Post, uuid: string) {
+    const like = await this.like.getPostLikeByIds(uuid, publication.id);
+    const formated_publication = {
+      ...publication,
+      likes: like,
+      tags: publication.tags.map((tag) => {
+        return {
+          id: tag.tag.id,
+          content: tag.tag.content,
+        };
+      }),
+      creator: {
+        id: publication.creator.id,
+        nickname: publication.creator.nickname,
+        profile_picture: SMALL_AVATAR.replace(
+          "default",
+          publication.creator.user_data.profile_picture,
+        ),
+      },
+    };
+    return formated_publication;
+  }
+
   async getLikedPosts(uuid: string) {
     const [postIds, likes] = await this.like.GetLikedPosts(uuid);
 
@@ -114,26 +138,7 @@ export class PostService {
       relations: ["creator", "creator.user_data", "tags", "tags.tag"],
     });
     if (!publication) throw new BadRequestException();
-    const like = await this.like.getPostLikeByIds(userId, postId);
-    const formated_publications = {
-      ...publication,
-      likes: like,
-      tags: publication.tags.map((tag) => {
-        return {
-          id: tag.tag.id,
-          content: tag.tag.content,
-        };
-      }),
-      creator: {
-        id: publication.creator.id,
-        nickname: publication.creator.nickname,
-        profile_picture: SMALL_AVATAR.replace(
-          "default",
-          publication.creator.user_data.profile_picture,
-        ),
-      },
-    };
-    return formated_publications;
+    return await this.FormatPublication(publication, userId);
   }
 
   public async getPostsByIdWithMarking(userId: string, postId: string) {
@@ -148,27 +153,7 @@ export class PostService {
       ],
     });
     if (!publication) throw new BadRequestException();
-    const like = await this.like.getPostLikeByIds(userId, postId);
-
-    const formated_publications = {
-      ...publication,
-      likes: like,
-      tags: publication.tags.map((tag) => {
-        return {
-          id: tag.tag.id,
-          content: tag.tag.content,
-        };
-      }),
-      creator: {
-        id: publication.creator.id,
-        nickname: publication.creator.nickname,
-        profile_picture: SMALL_AVATAR.replace(
-          "default",
-          publication.creator.user_data.profile_picture,
-        ),
-      },
-    };
-    return formated_publications;
+    return await this.FormatPublication(publication, userId);
   }
 
   async ByUserAndFollowed(uuid: string, page: number = 1, limit: number = 10) {
@@ -350,18 +335,11 @@ export class PostService {
   }
 
   public async UpdateView(postId: string) {
-    const post = await this.repo.findOneBy({ id: postId });
-    if (!post) return BadRequestException;
-    return await this.repo.save({ ...post, ...{ views: post.views + 1 } });
+    return await this.repo.increment({ id: postId }, "views", 1);
   }
 
   public async UpdateLike(postId: string) {
-    const post = await this.repo.findOneBy({ id: postId });
-    if (!post) return BadRequestException;
-    return await this.repo.save({
-      ...post,
-      ...{ likesCount: post.likeCount + 1 },
-    });
+    return await this.repo.increment({ id: postId }, "likes", 1);
   }
 
   public async CreatePost(
@@ -370,9 +348,6 @@ export class PostService {
     files: Express.Multer.File[],
     tags: string,
   ) {
-    const user = await this.users.getUserById(userId);
-    if (!user) throw new BadRequestException("User not found");
-
     let marking: Markingdt;
     try {
       marking = JSON.parse(dto.marking) as Markingdt;
@@ -405,7 +380,7 @@ export class PostService {
 
     const publication = await this.repo.save({
       ...CreateDTO.WithoutMarking(dto),
-      creator: user,
+      creator: { id: userId },
     });
 
     const mrk = await this.mark.save({
@@ -421,13 +396,12 @@ export class PostService {
   }
 
   public async DeletePost(uuid: string, postId: string) {
-    const post = await this.repo.findOne({
-      where: { id: postId },
-      relations: ["creator"],
+    const result = await this.repo.delete({
+      id: postId,
+      creator: { id: uuid },
     });
-    if (!post) return BadRequestException;
-    if (post.creator.id != uuid) return BadRequestException;
-    return await this.repo.delete({ id: post.id });
+    if (result.affected === 0) throw new BadRequestException();
+    return { status: "success" };
   }
 
   SearchAndAsignImage(
