@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNumber, IsOptional, IsString, IsUUID } from "class-validator";
 import { User } from "src/entity/user.entity";
-import { User_Data } from "src/entity/userData.entity";
+import { UserData } from "src/entity/userData.entity";
 
 export class UserDataDTO implements Readonly<UserDataDTO> {
   @IsUUID()
@@ -29,7 +29,7 @@ export class UserDataDTO implements Readonly<UserDataDTO> {
     return result;
   }
 
-  public static fromEntity(entity: User_Data) {
+  public static fromEntity(entity: UserData) {
     return this.from({
       id: entity.id,
       age: entity.age,
@@ -37,7 +37,7 @@ export class UserDataDTO implements Readonly<UserDataDTO> {
   }
 
   public toEntity() {
-    const it = new User_Data();
+    const it = new UserData();
     it.id = this.id;
     it.lastChangedDateTime = new Date();
     it.createDateTime = new Date();

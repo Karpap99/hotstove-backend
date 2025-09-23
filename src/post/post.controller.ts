@@ -79,14 +79,14 @@ export class PostController {
   public async create(
     @UploadedFiles() files: Express.Multer.File[],
     @Req() req: Request,
-    @Body() data: { post: CreateDTO; tags: string },
+    @Body() data: CreateDTO,
   ) {
     return await this.serv.CreatePost(
       req.user!.uuid,
       CreateDTO.from({
-        title: data.post.title,
-        description: data.post.description,
-        marking: data.post.marking,
+        title: data.title,
+        description: data.description,
+        marking: data.marking,
       }),
       files,
       data.tags,

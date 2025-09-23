@@ -16,6 +16,7 @@ import { Markingdt } from "./dto/types";
 import { Marking } from "src/entity/marking.entity";
 import { TagsService } from "src/tags/tags.service";
 import { FollowerService } from "src/follower/follower.service";
+import { SMALL_AVATAR } from "src/constants";
 
 type element = {
   component: string;
@@ -49,6 +50,34 @@ export class PostService {
     @Inject(forwardRef(() => FollowerService))
     private follower: FollowerService,
   ) {}
+
+  async FormatPublications(publications: Post[], uuid: string) {
+    const formated = await Promise.all(
+      publications.map(async (publication) => {
+        const like = await this.like.getPostLikeByIds(uuid, publication.id);
+        await this.repo.increment({ id: publication.id }, "views", 1);
+        return {
+          ...publication,
+          creator: {
+            id: publication.creator.id,
+            nickname: publication.creator.nickname,
+            profile_picture: SMALL_AVATAR.replace(
+              "default",
+              publication.creator.user_data.profile_picture,
+            ),
+          },
+          likes: like,
+          tags: publication.tags.map((tag) => {
+            return {
+              id: tag.tag.id,
+              content: tag.tag.content,
+            };
+          }),
+        };
+      }),
+    );
+    return formated;
+  }
 
   async getLikedPosts(uuid: string) {
     const [postIds, likes] = await this.like.GetLikedPosts(uuid);
@@ -86,7 +115,6 @@ export class PostService {
     });
     if (!publication) throw new BadRequestException();
     const like = await this.like.getPostLikeByIds(userId, postId);
-    const image_scheme = `${process.env.MINIO_ENDPOINT + "/" + process.env.MINIO_BUCKET_NAME}/profile_pictures/32x32_`;
     const formated_publications = {
       ...publication,
       likes: like,
@@ -99,7 +127,10 @@ export class PostService {
       creator: {
         id: publication.creator.id,
         nickname: publication.creator.nickname,
-        profile_picture: `${image_scheme + publication.creator.user_data.profile_picture}.jpeg`,
+        profile_picture: SMALL_AVATAR.replace(
+          "default",
+          publication.creator.user_data.profile_picture,
+        ),
       },
     };
     return formated_publications;
@@ -118,7 +149,6 @@ export class PostService {
     });
     if (!publication) throw new BadRequestException();
     const like = await this.like.getPostLikeByIds(userId, postId);
-    const image_scheme = `${process.env.MINIO_ENDPOINT + "/" + process.env.MINIO_BUCKET_NAME}/profile_pictures/32x32_`;
 
     const formated_publications = {
       ...publication,
@@ -132,7 +162,10 @@ export class PostService {
       creator: {
         id: publication.creator.id,
         nickname: publication.creator.nickname,
-        profile_picture: `${image_scheme + publication.creator.user_data.profile_picture}.jpeg`,
+        profile_picture: SMALL_AVATAR.replace(
+          "default",
+          publication.creator.user_data.profile_picture,
+        ),
       },
     };
     return formated_publications;
@@ -158,28 +191,8 @@ export class PostService {
         createDateTime: "DESC",
       },
     });
-    const image_scheme = `${process.env.MINIO_ENDPOINT + "/" + process.env.MINIO_BUCKET_NAME}/profile_pictures/32x32_`;
-    const formated = await Promise.all(
-      publications.map(async (publication) => {
-        const like = await this.like.getPostLikeByIds(uuid, publication.id);
-        await this.repo.increment({ id: publication.id }, "views", 1);
-        return {
-          ...publication,
-          creator: {
-            id: publication.creator.id,
-            nickname: publication.creator.nickname,
-            profile_picture: `${image_scheme + publication.creator.user_data.profile_picture}.jpeg`,
-          },
-          likes: like,
-          tags: publication.tags.map((tag) => {
-            return {
-              id: tag.tag.id,
-              content: tag.tag.content,
-            };
-          }),
-        };
-      }),
-    );
+
+    const formated = await this.FormatPublications(publications, uuid);
     return {
       data: formated,
       page,
@@ -212,28 +225,9 @@ export class PostService {
         createDateTime: "DESC",
       },
     });
-    const image_scheme = `${process.env.MINIO_ENDPOINT + "/" + process.env.MINIO_BUCKET_NAME}/profile_pictures/32x32_`;
-    const formated = await Promise.all(
-      publications.map(async (publication) => {
-        const like = await this.like.getPostLikeByIds(uuid, publication.id);
-        await this.repo.increment({ id: publication.id }, "views", 1);
-        return {
-          ...publication,
-          creator: {
-            id: publication.creator.id,
-            nickname: publication.creator.nickname,
-            profile_picture: `${image_scheme + publication.creator.user_data.profile_picture}.jpeg`,
-          },
-          likes: like,
-          tags: publication.tags.map((tag) => {
-            return {
-              id: tag.tag.id,
-              content: tag.tag.content,
-            };
-          }),
-        };
-      }),
-    );
+
+    const formated = await this.FormatPublications(publications, uuid);
+
     return {
       data: formated,
       page,
@@ -244,7 +238,7 @@ export class PostService {
   }
 
   public async getAll(
-    userId: string,
+    uuid: string,
     page: number = 1,
     limit: number = 10,
     query: string,
@@ -266,29 +260,8 @@ export class PostService {
         createDateTime: "DESC",
       },
     });
-    const image_scheme = `${process.env.MINIO_ENDPOINT + "/" + process.env.MINIO_BUCKET_NAME}/profile_pictures/32x32_`;
 
-    const formated = await Promise.all(
-      publications.map(async (publication) => {
-        const like = await this.like.getPostLikeByIds(userId, publication.id);
-        await this.repo.increment({ id: publication.id }, "views", 1);
-        return {
-          ...publication,
-          creator: {
-            id: publication.creator.id,
-            nickname: publication.creator.nickname,
-            profile_picture: `${image_scheme + publication.creator.user_data.profile_picture}.jpeg`,
-          },
-          likes: like,
-          tags: publication.tags.map((tag) => {
-            return {
-              id: tag.tag.id,
-              content: tag.tag.content,
-            };
-          }),
-        };
-      }),
-    );
+    const formated = await this.FormatPublications(publications, uuid);
 
     return {
       data: formated,
@@ -344,8 +317,6 @@ export class PostService {
       },
     });
 
-    const image_scheme = `${process.env.MINIO_ENDPOINT + "/" + process.env.MINIO_BUCKET_NAME}/profile_pictures/32x32_`;
-
     const formated = await Promise.all(
       publications.map(async (publication) => {
         await this.repo.increment({ id: publication.id }, "views", 1);
@@ -354,7 +325,10 @@ export class PostService {
           creator: {
             id: publication.creator.id,
             nickname: publication.creator.nickname,
-            profile_picture: `${image_scheme + publication.creator.user_data.profile_picture}.jpeg`,
+            profile_picture: SMALL_AVATAR.replace(
+              "default",
+              publication.creator.user_data.profile_picture,
+            ),
           },
           tags: publication.tags.map((tag) => {
             return {
@@ -446,15 +420,13 @@ export class PostService {
     return { publication, mrk };
   }
 
-  public async DeletePost(userId: string, postId: string) {
-    const user = await this.users.getUserById(userId);
-    if (!user) return BadRequestException;
+  public async DeletePost(uuid: string, postId: string) {
     const post = await this.repo.findOne({
       where: { id: postId },
       relations: ["creator"],
     });
     if (!post) return BadRequestException;
-    if (post.creator.id != userId) return BadRequestException;
+    if (post.creator.id != uuid) return BadRequestException;
     return await this.repo.delete({ id: post.id });
   }
 

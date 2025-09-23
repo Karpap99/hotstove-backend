@@ -11,7 +11,7 @@ import { UserDTO } from "./dto/user.dto";
 import { UploaderService } from "src/uploader/uploader.service";
 import { PostService } from "src/post/post.service";
 import { FollowerService } from "src/follower/follower.service";
-import { BIG_AVATAR, SMALL_AVATAR } from "src/constants";
+import { BIG_AVATAR } from "src/constants";
 
 @Injectable()
 export class UserService {
@@ -26,17 +26,17 @@ export class UserService {
     return await this.repo.find();
   }
 
-  public async getUserById(user: string) {
+  public async IsUserExist(uuid: string): Promise<boolean> {
+    return await this.repo.exists({ where: { id: uuid } });
+  }
+
+  public async getUserById(id: string) {
     const result = await this.repo.findOne({
       where: {
-        id: user,
+        id: id,
       },
     });
     if (!result) throw new BadRequestException("No user");
-    result.user_data.profile_picture = SMALL_AVATAR.replace(
-      "default",
-      result.user_data.profile_picture,
-    );
     return result;
   }
 

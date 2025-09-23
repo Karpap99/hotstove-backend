@@ -52,7 +52,7 @@ export class AuthService {
       TokenDto.from(result.id, result.email, result.nickname),
     );
     const response = ResponseDTO.from(result);
-    return { result: response, access: access, refresh: refresh };
+    return { access: access, refresh: refresh, result: response };
   }
 
   async validateUser(loginDTO: LoginDto): Promise<User> {
@@ -91,7 +91,7 @@ export class AuthService {
     const tokenDTO = TokenDto.from(user.id, user.email, user.nickname);
     const { access, refresh } = this.getToken(tokenDTO);
     const response = ResponseDTO.from(user);
-    return { result: response, access: access, refresh: refresh };
+    return { access: access, refresh: refresh, result: response };
   }
 
   async login(usr: LoginDto) {
@@ -99,7 +99,7 @@ export class AuthService {
     const tokenDTO = TokenDto.from(user.id, user.email, user.nickname);
     const { access, refresh } = this.getToken(tokenDTO);
     const response = ResponseDTO.from(user);
-    return { result: response, access: access, refresh: refresh };
+    return { access: access, refresh: refresh, result: response };
   }
 
   async verifyToken(token: string, type: "access" | "refresh") {

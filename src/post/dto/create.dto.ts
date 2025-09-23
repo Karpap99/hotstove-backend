@@ -30,6 +30,9 @@ export class CreateDTO implements Readonly<CreateDTO> {
   @ApiProperty({ required: false })
   likes: Likes[];
 
+  @ApiProperty({ required: false })
+  tags: string;
+
   public static from(dto: Partial<CreateDTO>) {
     const it = new CreateDTO();
     const result = Object.assign({}, it, dto);
